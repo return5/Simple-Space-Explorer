@@ -15,7 +15,7 @@ local function checkPlanetName(name,planet)
     end
 end
 
---get a random icon for teh planet
+
 local function getPlanetIcon()
     local i    = math.random(1,6)
     local name = "Planet_icon_" .. i ..".png"
@@ -34,12 +34,11 @@ end
 --loop through solar_system and check function against each planet
 --params is a table of parameters, func is function to check against
 local function checkPlanets(params,func)
+    local cond = false
     for i=1,#SOLAR_SYSTEM,1 do
-        if func(params,SOLAR_SYSTEM[i]) == true then
-            return true
-        end
+        cond = func(params,SOLAR_SYSTEM[i])
     end
-    return false
+    return cond
 end
 
 --get a unique x,y for a new planet
