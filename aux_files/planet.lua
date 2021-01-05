@@ -4,7 +4,8 @@ PLANET = {name = nil, x = nil, y = nil, items = nil, icon = nil}
 PLANET.__index = PLANET
 
 local NAMES  = {"Bob","Omicron 8","Tyroid","Persus 4","Wisseau","Amina","Klandathu","Sigma 7","Decument","Kelvar","Romulax","Hellena","Ariax","Nilmen","Collosix","Naliux","Sirux","Watermux","Neptunia","Posidia"}
-SOLAR_SYSTEM = {}
+
+local SOLAR_SYSTEM = {}
 
 --check to see if current name matches that of another planet
 local function checkPlanetName(name,planet)
@@ -18,8 +19,8 @@ end
 
 local function getPlanetIcon()
     local i    = math.random(1,15)
-    local name = "Planet_icon_" .. i ..".png"
-    return love.graphics.newImage("/img/planets/" .. name)
+    local name = "/img/planets/planet_icon_" .. i ..".png"
+    return love.graphics.newImage(name)
 end
 
 --check to see if current x,y matches that of another planet
@@ -54,7 +55,7 @@ end
 
 --get a unique name for a new planet
 local function getPlanetName()
-    local rand = math.rand
+    local rand = math.random
     local name
     repeat
         name = NAMES[rand(1,#NAMES)]
@@ -63,7 +64,7 @@ local function getPlanetName()
 end
 
 function PLANET:new()
-    local self    = setmettable({},PLANET)
+    local self    = setmetatable({},PLANET)
     self.x,self.y = getPlanetXY()
     self.name     = getPlanetName() 
     self.items    = makePlanetItems()
@@ -78,6 +79,7 @@ function makeSolarSystem()
     for i=1,n,1 do
         additem(SOLAR_SYSTEM,PLANET:new())
     end
+    return SOLAR_SYSTEM
 end
 
 

@@ -9,8 +9,8 @@ local NAMES = {"Beagle","Rescue","Entrepid","Astrid","Hercules","Archon","Flicke
 
 
 --checks current x,y to make sure it isnt same as another ship
-local function checkXY(x,y,ship)
-    if shipx.x == x and ship.y == y then
+local function checkXY(params,ship)
+    if ship.x == params.x and ship.y == params.y then
         return true
     else 
         return false
@@ -41,6 +41,7 @@ local function checkPlanetCoord(x,y,solar_system)
     for i=1,#solar_system,1 do
         if solar_system[i].x == x and solar_system[i].y == y then
             return true
+        end
     end
     return false
 end
@@ -69,17 +70,18 @@ end
 local function makeShipIcon()
     local i    = math.random(1,33)
     local name = "/img/ships/ship_icon_" .. i .. ".png"
-    return love.grpahics.newImage(name)
+    return love.graphics.newImage(name)
+end
 
     --player inputs their ship name
 local function getPlayerShipName()
-    love.graphics.print("Please enter ship name:",width / 2, HEIGHT / 2)
+    love.graphics.print("Please enter ship name:",WIDTH / 2, HEIGHT / 2)
     local name = io.input()
     return name
 end
 
 function SHIP:new(name,health,attk,def,items,solar_system)
-    local self    = setmettatble({},SHIP)
+    local self    = setmetatable({},SHIP)
     self.x,self.y = makeXY(solar_system)
     self.name     = name 
     self.icon     = makeShipIcon()
@@ -92,7 +94,7 @@ end
 
 --make the player ship
 function makePlayerShip(solar_system)
-    local name   = getPlayerShipName() 
+    local name   = "chris"--getPlayerShipName() 
     local health = math.random() 
     local attk   = math.random()
     local def    = math.random()
@@ -103,14 +105,14 @@ end
 
 function makeEnemyShips(solar_system)
     local rand  = math.random
-    loacal add  = table.insert
+    local add   = table.insert
     local n     = rand(3,7)
     for i=1,n,1 do
         local health = rand()
         local attk   = rand()
         local def    = rand()
         local name   = makeShipName(rand)
-        add(SHIPS,SHIP:new(health,attk,def,nil,solar_system))
+        add(SHIPS,SHIP:new(name,health,attk,def,nil,solar_system))
     end
 end
         

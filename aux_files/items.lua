@@ -3,7 +3,7 @@ ITEM.__index = ITEM
 
 
 function ITEM:new()
-    local self = setmettable({},ITEM)
+    local self = setmetatable({},ITEM)
     return self
 end
 
