@@ -63,6 +63,17 @@ local function getPlanetName()
     return name
 end
 
+
+function PLANET:print()
+    love.graphics.draw(self.icon,self.x,self.y)
+end
+
+function printPlanets()
+    for i=1,#SOLAR_SYSTEM,1 do
+        SOLAR_SYSTEM[i]:print()
+    end
+end
+
 function PLANET:new()
     local self    = setmetatable({},PLANET)
     self.x,self.y = getPlanetXY()

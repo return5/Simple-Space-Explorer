@@ -3,7 +3,9 @@ local Ships   = require("aux_files.ship")
 
 
 function love.draw()
-    love.graphics.draw(PLAYER.icon,PLAYER.x,PLAYER.y)
+    PLAYER:print()
+    printShips()
+    printPlanets()
 end
 
 function love.update()
@@ -12,6 +14,7 @@ end
 
 
 function love.load()
+    math.randomseed(os.time())
     HEIGHT       = 800
     WIDTH        = 900
     love.window.setMode(WIDTH,HEIGHT)

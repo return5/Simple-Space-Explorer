@@ -2,7 +2,7 @@ SHIP = {x = nil, y = nil, speed = nil, name = nil,icon = nil,health = nil, attk 
 SHIP.__index = SHIP
 
 --list of all ships in game
-SHIPS = {}
+local SHIPS = {}
 
 --names for ships
 local NAMES = {"Beagle","Rescue","Entrepid","Astrid","Hercules","Archon","Flicker","Thrasher","Thrush","Evans","Low Blow","Nautilus","Nostromo","Pequod","Conrad","Sulako","Penguin","Patience","Shackleton","Livingston","Binoc","Jove","Wren","Eisley","Galileo"}
@@ -79,6 +79,18 @@ local function getPlayerShipName()
     local name = io.input()
     return name
 end
+
+function SHIP:print()
+    love.graphics.draw(self.icon,self.x,self.y)
+end
+
+
+function printShips()
+    for i=1,#SHIPS,1 do
+        SHIPS[i]:print()
+    end
+end
+        
 
 function SHIP:new(name,health,attk,def,items,solar_system)
     local self    = setmetatable({},SHIP)
