@@ -1,4 +1,4 @@
-ITEM = {}
+ITEM = {name = nil, func = nil, price = nil, quant = nil}
 ITEM.__index = ITEM
 
 
@@ -9,6 +9,11 @@ end
 
 
 function makePlanetItems()
+    return ITEM:new()
+end
+
+
+function makeInv(rand,add)
     return ITEM:new()
 end
 

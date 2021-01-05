@@ -1,11 +1,15 @@
-SHIP = {x = nil, y = nil, speed = nil, name = nil,icon = nil,health = nil, attk = nil, def = nil,items = nil}
+SHIP = {x = nil, y = nil, speed = nil, name = nil,icon = nil,health = nil, attk = nil, def = nil,items = nil,hostile = nil}
 SHIP.__index = SHIP
 
 --list of all ships in game
 local SHIPS = {}
 
 --names for ships
-local NAMES = {"Beagle","Rescue","Entrepid","Astrid","Hercules","Archon","Flicker","Thrasher","Thrush","Evans","Low Blow","Nautilus","Nostromo","Pequod","Conrad","Sulako","Penguin","Patience","Shackleton","Livingston","Binoc","Jove","Wren","Eisley","Galileo"}
+local NAMES = {
+                "Beagle","Rescue","Entrepid","Astrid","Hercules","Archon","Flicker","Thrasher","Thrush","Evans","Fong","Nautilus","Nostromo","Pequod",
+                "Conrad","Sulako","Penguin","Patience","Shackleton","Livingston","Binoc","Jove","Wren","Eisley","Galileo","Excalibre","Excelsior","Cardigan",
+                "Parssons","Constitution","Reliant","Junko","Cardinal","Bishop","Prince","Earl","Duke","Mockingbird","Contagion","Regent"
+            }
 
 
 --checks current x,y to make sure it isnt same as another ship
@@ -68,7 +72,7 @@ end
 
 --get a rndom icon for the ship
 local function makeShipIcon()
-    local i    = math.random(1,33)
+    local i    = math.random(1,34)
     local name = "/img/ships/ship_icon_" .. i .. ".png"
     return love.graphics.newImage(name)
 end
@@ -101,6 +105,7 @@ function SHIP:new(name,health,attk,def,items,solar_system)
     self.attk     = attk
     self.def      = def
     self.items    = items
+    self.hostile  = math.random(0,10) < 6 and false or true
     return self
 end
 
@@ -124,7 +129,11 @@ function makeEnemyShips(solar_system)
         local attk   = rand()
         local def    = rand()
         local name   = makeShipName(rand)
-        add(SHIPS,SHIP:new(name,health,attk,def,nil,solar_system))
+        local ship   = SHIP:new(name,health,attk,def,nil,solar_system)
+        if ship.hostile == false then
+            ship.inv = makeInv(rand,add)
+        end
+        add(SHIPS,ship)
     end
 end
         

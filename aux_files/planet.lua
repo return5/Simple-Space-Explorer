@@ -18,7 +18,7 @@ end
 
 
 local function getPlanetIcon()
-    local i    = math.random(1,15)
+    local i    = math.random(1,38)
     local name = "/img/planets/planet_icon_" .. i ..".png"
     return love.graphics.newImage(name)
 end
