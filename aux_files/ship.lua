@@ -5,7 +5,7 @@ SHIP.__index = SHIP
 SHIPS = {}
 
 --names for ships
-local NAMES = {"Beagle","Rescue","Entrepid","Astrid","Hercules","Archon","Flicker","Thrasher","Thrush","Evans","Low Blow","Nautilus","Nostromo","Pequod","Conrad","Sulako","Penguin","Patience","Shackleton","Livingston","Binoc","Jove","Wren","Eisley"}
+local NAMES = {"Beagle","Rescue","Entrepid","Astrid","Hercules","Archon","Flicker","Thrasher","Thrush","Evans","Low Blow","Nautilus","Nostromo","Pequod","Conrad","Sulako","Penguin","Patience","Shackleton","Livingston","Binoc","Jove","Wren","Eisley","Galileo"}
 
 
 --checks current x,y to make sure it isnt same as another ship
@@ -67,7 +67,7 @@ end
 
 --get a rndom icon for the ship
 local function makeShipIcon()
-    local i    = math.random(1,6)
+    local i    = math.random(1,33)
     local name = "/img/ships/ship_icon_" .. i .. ".png"
     return love.grpahics.newImage(name)
 
