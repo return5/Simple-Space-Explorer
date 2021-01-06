@@ -1,4 +1,4 @@
-SHIP = {x = nil, y = nil, speed = nil, name = nil,icon = nil,health = nil, attk = nil, def = nil,items = nil,hostile = nil, x_off = nil, y_off = nil}
+SHIP = {x = nil, y = nil, speed = nil, name = nil,icon = nil,health = nil, attk = nil, def = nil,items = nil,hostile = nil, x_off = nil, y_off = nil, angle = nil}
 SHIP.__index = SHIP
 
 --list of all ships in game
@@ -85,7 +85,7 @@ local function getPlayerShipName()
 end
 
 function SHIP:print()
-    love.graphics.draw(self.icon,self.x,self.y,nil,nil,nil,self.x_off,self.y_off)
+    love.graphics.draw(self.icon,self.x,self.y,self.angle,1,1,self.x_off,self.y_off)
 end
 
 
@@ -108,6 +108,7 @@ function SHIP:new(name,health,attk,def,items,solar_system)
     self.x_off    = self.icon:getWidth() / 2
     self.y_off    = self.icon:getHeight() / 2
     self.hostile  = math.random(0,10) < 6 and false or true
+    self.angle    =  -3.14 + math.random() * (3.14 * 2) 
     return self
 end
 
