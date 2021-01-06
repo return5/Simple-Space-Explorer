@@ -1,3 +1,5 @@
+--File contains functions for creating SHIP objects.
+
 local Object = require("aux_files.object")
 
 SHIP = { speed = nil, attk = nil, def = nil,hostile = nil}
@@ -23,23 +25,25 @@ local function makeShipName(rand)
     return name
 end
 
---get a rndom icon for the ship
+--get a random icon for the ship
 local function makeShipIcon(rand)
     local i    = rand(1,34)
     local name = "/img/ships/ship_icon_" .. i .. ".png"
     return love.graphics.newImage(name)
 end
 
-    --player inputs their ship name
+--player inputs their ship name
 local function getPlayerShipName()
     love.graphics.print("Please enter ship name:",WIDTH / 2, HEIGHT / 2)
     local name = io.input()
     return name
 end
 
+--create new SHIP object
 function SHIP:new(name,attk,hull,money,solar_system,rand,add)
     local name = name 
     local icon = makeShipIcon(rand)
+    --create new OBJECT object, SHIP inherents from OBJECT
     local o    = setmetatable(OBJECT:new(icon,name,rand,add,3,solar_system,ships),SHIP)
     o.attk     = attk
     o.hull     = hull
@@ -47,7 +51,6 @@ function SHIP:new(name,attk,hull,money,solar_system,rand,add)
     o.money    = money
     o.speed    = rand(70,110)
     o.hostile  = rand(0,10) < 6 and false or true
-    o.angle    =  -3.14 + math.random() * (3.14 * 2) 
     return o
 end
 
@@ -63,7 +66,8 @@ function makePlayerShip(solar_system)
     return ship
 end
 
-function makeEnemyShips(solar_system)
+--make a list of non player controlled SHIP objects. store then in 'SHIPS'
+function makeComputerShips(solar_system)
     local rand  = math.random
     local add   = table.insert
     local n     = rand(5,#SHIP_NAMES / 2)

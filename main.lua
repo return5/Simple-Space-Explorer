@@ -5,6 +5,7 @@ local WINDOW_HEIGHT = 800
 local drawFunc
 
 
+--draw open space with ships and planets.
 local function drawSpace()
     love.graphics.translate(-PLAYER.x + HALF_W, -PLAYER.y + HALF_H)
     printObjects(SHIPS,PLAYER)
@@ -12,6 +13,7 @@ local function drawSpace()
     PLAYER:print(PLAYER)
 end
 
+--prints player inventory selection screen
 local function drawInventory()
     love.graphics.setNewFont(20)
     love.graphics.print("player inventory:",4,1)
@@ -30,6 +32,7 @@ function love.draw(dt)
     drawFunc()
 end
 
+--get the direction which the ship should face based on the location of the mouse
 local function getDirection()
     local mouse_x = love.mouse.getX() + PLAYER.x - HALF_W
     local mouse_y = love.mouse.getY() + PLAYER.y - HALF_H
@@ -37,6 +40,7 @@ local function getDirection()
     PLAYER.angle  = angle
 end
 
+--move the Player's ship forward
 local function movePlayerShip(dt)
     local cos    = math.cos(PLAYER.angle)
     local sin    = math.sin(PLAYER.angle) 
@@ -44,6 +48,7 @@ local function movePlayerShip(dt)
     PLAYER.y     = PLAYER.y + PLAYER.speed * sin * dt
 end
 
+--if flying in outerspace then get direction and move ship
 local function playerShipSpace(dt)
     getDirection()
     if love.keyboard.isScancodeDown("w") then
@@ -66,16 +71,16 @@ end
 
 function love.load()
     math.randomseed(os.time())
-    HEIGHT       = 3000
-    WIDTH        = 3000
-    DRAW_SPACE   = true
-    DRAW_INV     = false
-    DRAW_TRADE   = false
-    HALF_W       = WINDOW_WIDTH / 2
-    HALF_H       = WINDOW_HEIGHT / 2
+    HEIGHT       = 3000     --height of entire game world
+    WIDTH        = 3000     --width of entire game world
+    DRAW_SPACE   = true     --should open space screen be drawn
+    DRAW_INV     = false    --should inventory screen be drawn
+    DRAW_TRADE   = false    -- should trade screen be drawn
+    HALF_W       = WINDOW_WIDTH / 2  --half the width of the window
+    HALF_H       = WINDOW_HEIGHT / 2 --half the height of window
     love.window.setMode(WINDOW_WIDTH,WINDOW_HEIGHT)
-    SOLAR_SYSTEM = makeSolarSystem()
-    PLAYER       = makePlayerShip(SOLAR_SYSTEM)
-    SHIPS        = makeEnemyShips(SOLAR_SYSTEM)
+    SOLAR_SYSTEM = makeSolarSystem()              --list of all planets
+    PLAYER       = makePlayerShip(SOLAR_SYSTEM)   --player ship
+    SHIPS        = makeComputerShips(SOLAR_SYSTEM)   --list of non player controlled ships
 end
 
