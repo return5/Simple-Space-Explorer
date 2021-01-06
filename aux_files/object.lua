@@ -4,15 +4,55 @@ OBJECT = {name = nil, x = nil, y = nil, items = nil, icon = nil, x_off = nil, y_
 OBJECT.__index = OBJECT
 
 
-function OBJECT:new(x,y,icon,name,rand,add,max)
-    self        = setmetatable({},OBJECT)
-    self.x      = x
-    self.y      = y
-    self.name   = name 
-    self.items  = makeInv(rand,add,max)
-    self.icon   = icon 
-    self.x_off  = self.icon:getWidth() / 2
-    self.y_off  = self.icon:getHeight() / 2
+
+function checkName(obj,params)
+    if params.name == obj.name then
+        return true
+    else
+        return false
+    end
+end
+
+--check to see if current x,y matches that of another object
+function checkIfOverlap(object,params)
+    if params.x > (object.x - 175) and params.x < (object.x + 175) then
+        if params.y > (object.y - 175) and params.y < (object.y + 175) then
+            return true
+        end
+    end
+    return false
+end
+
+function iterateObjects(objects,params,func)
+    if objects ~= nil then
+        for i=1,#objects,1 do
+            if func(objects[i],params) == true then
+                return true
+            end
+        end
+    end
+    return false
+end
+
+local function makeXY(rand,solar_system,ships)
+    local x,y
+    local check = checkIfOverlap
+    repeat
+        x = rand(1,WIDTH)
+        y = rand(1,HEIGHT)
+        local params = {x = x, y = y}
+    until(iterateObjects(solar_system,params,check) == false and iterateObjects(ships,params,check) == false)
+    return x,y
+end
+
+function OBJECT:new(icon,name,rand,add,max,solar_system,ships)
+    self           = setmetatable({},OBJECT)
+    self.x,self.y  = makeXY(rand,solar_system,ships)
+    self.name      = name 
+    self.items     = makeInv(rand,add,max)
+    self.icon      = icon 
+    self.x_off     = self.icon:getWidth() / 2
+    self.y_off     = self.icon:getHeight() / 2
     return self
 end
 

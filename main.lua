@@ -20,8 +20,8 @@ end
 local function movePlayerShip(dt)
     local cos    = math.cos(PLAYER.angle)
     local sin    = math.sin(PLAYER.angle) 
-    PLAYER.x     = PLAYER.x + 200 * cos * dt
-    PLAYER.y     = PLAYER.y + 200 * sin * dt
+    PLAYER.x     = PLAYER.x + PLAYER.speed * cos * dt
+    PLAYER.y     = PLAYER.y + PLAYER.speed * sin * dt
 end
 
 function love.update(dt)
