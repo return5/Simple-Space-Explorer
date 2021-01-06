@@ -66,7 +66,7 @@ end
 function makeEnemyShips(solar_system)
     local rand  = math.random
     local add   = table.insert
-    local n     = rand(10,#SHIP_NAMES)
+    local n     = rand(5,#SHIP_NAMES / 2)
     for i=1,n,1 do
         local attk   = rand(2,15)
         local hull   = rand(45,200)

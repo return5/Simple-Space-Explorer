@@ -1,6 +1,6 @@
 local Items  = require("aux_files.items")
 
-OBJECT = {name = nil, x = nil, y = nil, items = nil, icon = nil, x_off = nil, y_off = nil,angle = nil,discovered = false}
+OBJECT = {name = nil, x = nil, y = nil, inv = nil, icon = nil, x_off = nil, y_off = nil,angle = nil,discovered = false}
 OBJECT.__index = OBJECT
 
 
@@ -49,7 +49,7 @@ function OBJECT:new(icon,name,rand,add,max,solar_system,ships)
     self           = setmetatable({},OBJECT)
     self.x,self.y  = makeXY(rand,solar_system,ships)
     self.name      = name 
-    self.items     = makeInv(rand,add,max)
+    self.inv       = makeInv(rand,add,max)
     self.icon      = icon 
     self.x_off     = self.icon:getWidth() / 2
     self.y_off     = self.icon:getHeight() / 2

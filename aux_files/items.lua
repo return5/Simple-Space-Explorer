@@ -1,7 +1,11 @@
 ITEM = {name = nil, func = nil, price = nil, quant = nil}
 ITEM.__index = ITEM
 
-local RARE_ITEMS = {"Mystery Box","E.T. Cartridge Game","Sonichu Medallion","Asperchu Medallion","Spock's Brain","Kurlan Naiskos","D.B Cooper's Frozen Head","Apple Newton","Bill Of Rights","Blood Source Code","Apolo 11 flag","Luke's Blue LightSaber"}
+local RARE_ITEMS = {
+                    "Mystery Box","E.T. Cartridge Game","Sonichu Medallion","Asperchu Medallion","Spock's Brain",
+                    "Kurlan Naiskos","D.B Cooper's Frozen Head","Apple Newton","Bill Of Rights","Blood Source Code",
+                    "Apolo 11 flag","Luke's Blue LightSaber"
+                }
 
 
 function ITEM:new(name,func,price,quant)
