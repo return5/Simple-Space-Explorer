@@ -2,14 +2,12 @@ local Planets = require("aux_files.planet")
 local Ships   = require("aux_files.ship")
 local WINDOW_WIDTH  = 800
 local WINDOW_HEIGHT = 800
-local HALF_W        = WINDOW_WIDTH / 2
-local HALF_H        = WINDOW_HEIGHT / 2
 
 function love.draw(dt)
     love.graphics.translate(-PLAYER.x + HALF_W, -PLAYER.y + HALF_H)
-    printShips()
-    printPlanets()
-    PLAYER:print()
+    printObjects(SHIPS,PLAYER)
+    printObjects(SOLAR_SYSTEM,PLAYER)
+    PLAYER:print(PLAYER)
 end
 
 local function getDirection()
@@ -28,7 +26,9 @@ end
 
 function love.update(dt)
     getDirection()
-    movePlayerShip(dt)
+    if love.keyboard.isDown("w") then
+        movePlayerShip(dt)
+    end
 end
 
 
@@ -36,6 +36,8 @@ function love.load()
     math.randomseed(os.time())
     HEIGHT       = 3000
     WIDTH        = 3000
+    HALF_W       = WINDOW_WIDTH / 2
+    HALF_H       = WINDOW_HEIGHT / 2
     love.window.setMode(WINDOW_WIDTH,WINDOW_HEIGHT)
     SOLAR_SYSTEM = makeSolarSystem()
     PLAYER       = makePlayerShip(SOLAR_SYSTEM)

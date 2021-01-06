@@ -1,9 +1,10 @@
-local Items = require("aux_files.items")
+local Object = require("aux_files.object")
 
-PLANET = {name = nil, x = nil, y = nil, items = nil, icon = nil, x_off = nil, y_off = nil}
+PLANET = {}
 PLANET.__index = PLANET
+setmetatable(PLANET,OBJECT)
 
-local NAMES  = {
+local PLANET_NAMES  = {
                 "Bob","Omicron 8","Tyroid","Persus 4","Wisseau","Amina","Klandathu","Sigma 7","Decument",
                 "Kelvar","Romulax","Hellena","Ariax","Nilmen","Collosix","Naliux","Sirux","Watermux","Neptunia",
                 "Posidia","Ares 5","Ki-pi","Marchus","Hannux",""
@@ -20,9 +21,8 @@ local function checkPlanetName(name,planet)
     end
 end
 
-
-local function getPlanetIcon()
-    local i    = math.random(1,38)
+local function getPlanetIcon(rand)
+    local i    = rand(1,38)
     local name = "/img/planets/planet_icon_" .. i ..".png"
     return love.graphics.newImage(name)
 end
@@ -48,8 +48,7 @@ local function checkPlanets(params,func)
 end
 
 --get a unique x,y for a new planet
-local function getPlanetXY()
-    local rand = math.random
+local function getPlanetXY(rand)
     local x,y
     repeat
         x = rand(0,WIDTH)
@@ -59,43 +58,28 @@ local function getPlanetXY()
 end
 
 --get a unique name for a new planet
-local function getPlanetName()
-    local rand = math.random
+local function getPlanetName(rand)
     local name
     repeat
-        name = NAMES[rand(1,#NAMES)]
+        name = PLANET_NAMES[rand(1,#PLANET_NAMES)]
     until(checkPlanets({name},checkPlanetName) == false)
     return name
 end
 
-
-function PLANET:print()
-    love.graphics.draw(self.icon,self.x,self.y,nil,nil,nil,self.x_off,self.y_off)
+function PLANET:new(rand,add)
+    local x,y   = getPlanetXY(rand)
+    local name  = getPlanetName(rand) 
+    local icon  = getPlanetIcon(rand)
+    local o     = setmetatable(OBJECT:new(x,y,icon,name,rand,add,6),PLANET)
+    return o
 end
-
-function printPlanets()
-    for i=1,#SOLAR_SYSTEM,1 do
-        SOLAR_SYSTEM[i]:print()
-    end
-end
-
-function PLANET:new()
-    local self    = setmetatable({},PLANET)
-    self.x,self.y = getPlanetXY()
-    self.name     = getPlanetName() 
-    self.items    = makePlanetItems()
-    self.icon     = getPlanetIcon()
-    self.x_off    = self.icon:getWidth() / 2
-    self.y_off    = self.icon:getHeight() / 2
-    return self
-end
-
 
 function makeSolarSystem()
-    local n       = math.random(5,#NAMES)
+    local rand    = math.random
+    local n       = rand(15,#PLANET_NAMES)
     local additem = table.insert
     for i=1,n,1 do
-        additem(SOLAR_SYSTEM,PLANET:new())
+        additem(SOLAR_SYSTEM,PLANET:new(rand,additem))
     end
     return SOLAR_SYSTEM
 end

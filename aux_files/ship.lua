@@ -1,11 +1,14 @@
-SHIP = {x = nil, y = nil, speed = nil, name = nil,icon = nil,health = nil, attk = nil, def = nil,items = nil,hostile = nil, x_off = nil, y_off = nil, angle = nil}
+local Object = require("aux_files.object")
+
+SHIP = { speed = nil, attk = nil, def = nil,hostile = nil}
 SHIP.__index = SHIP
+setmetatable(SHIP,OBJECT)
 
 --list of all ships in game
 local SHIPS = {}
 
 --names for ships
-local NAMES = {
+local SHIP_NAMES = {
                 "Beagle","Rescue","Entrepid","Astrid","Hercules","Archon","Flicker","Thrasher","Thrush","Evans","Fong","Nautilus","Nostromo","Pequod",
                 "Conrad","Sulako","Penguin","Patience","Shackleton","Livingston","Binoc","Jove","Wren","Eisley","Galileo","Excalibre","Excelsior","Cardigan",
                 "Parssons","Constitution","Reliant","Junko","Cardinal","Bishop","Prince","Earl","Duke","Mockingbird","Contagion","Regent"
@@ -51,8 +54,7 @@ local function checkPlanetCoord(x,y,solar_system)
 end
 
 --get random x,y for a ship
-local function makeXY(solar_system)
-    local rand = math.random
+local function makeXY(rand,solar_system)
     local x,y
     repeat
         x = rand(1,WIDTH)
@@ -65,14 +67,14 @@ end
 local function makeShipName(rand)
     local name
     repeat
-        name = rand(1,#NAMES)
+        name = SHIP_NAMES[rand(1,#SHIP_NAMES)]
     until(checkShips(name,checkShipName) == false)
     return name
 end
 
 --get a rndom icon for the ship
-local function makeShipIcon()
-    local i    = math.random(1,34)
+local function makeShipIcon(rand)
+    local i    = rand(1,34)
     local name = "/img/ships/ship_icon_" .. i .. ".png"
     return love.graphics.newImage(name)
 end
@@ -84,60 +86,44 @@ local function getPlayerShipName()
     return name
 end
 
-function SHIP:print()
-    love.graphics.draw(self.icon,self.x,self.y,self.angle,1,1,self.x_off,self.y_off)
-end
-
-
-function printShips()
-    for i=1,#SHIPS,1 do
-        SHIPS[i]:print()
-    end
-end
-        
-
-function SHIP:new(name,health,attk,def,items,solar_system)
-    local self    = setmetatable({},SHIP)
-    self.x,self.y = makeXY(solar_system)
-    self.name     = name 
-    self.icon     = makeShipIcon()
-    self.health   = health
-    self.attk     = attk
-    self.def      = def
-    self.items    = items
-    self.x_off    = self.icon:getWidth() / 2
-    self.y_off    = self.icon:getHeight() / 2
-    self.hostile  = math.random(0,10) < 6 and false or true
-    self.angle    =  -3.14 + math.random() * (3.14 * 2) 
-    return self
+function SHIP:new(name,attk,hull,money,solar_system,rand,add)
+    local x, y = makeXY(rand,solar_system)
+    local name = name 
+    local icon = makeShipIcon(rand)
+    local o    = setmetatable(OBJECT:new(x,y,icon,name,rand,add,3),SHIP)
+    o.attk     = attk
+    o.hull     = hull
+    o.items    = items
+    o.money    = money
+    o.speed    = rand(70,110)
+    o.hostile  = rand(0,10) < 6 and false or true
+    o.angle    =  -3.14 + math.random() * (3.14 * 2) 
+    return o
 end
 
 --make the player ship
 function makePlayerShip(solar_system)
-    local name   = "chris"--getPlayerShipName() 
-    local health = math.random() 
-    local attk   = math.random()
-    local def    = math.random()
-    local items  = nil
-    return SHIP:new(name,health,attk,def,items,solar_system)
+    local rand   = math.random
+    local name   = "return5"--getPlayerShipName() 
+    local attk   = rand(5,10)
+    local hull   = rand(70,150)
+    local money  = rand(200,600)
+    return SHIP:new(name,attk,hull,money,solar_system,rand,table.insert)
 end
-
 
 function makeEnemyShips(solar_system)
     local rand  = math.random
     local add   = table.insert
-    local n     = rand(3,7)
+    local n     = rand(10,#SHIP_NAMES)
     for i=1,n,1 do
-        local health = rand()
         local attk   = rand()
-        local def    = rand()
+        local hull   = rand()
         local name   = makeShipName(rand)
-        local ship   = SHIP:new(name,health,attk,def,nil,solar_system)
-        if ship.hostile == false then
-            ship.inv = makeInv(rand,add)
-        end
+        local money  = rand(300,800)
+        local ship   = SHIP:new(name,attk,hull,money,solar_system,rand,add)
         add(SHIPS,ship)
     end
+    return SHIPS
 end
         
 
