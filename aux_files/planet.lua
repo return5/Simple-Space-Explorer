@@ -1,9 +1,13 @@
 local Items = require("aux_files.items")
 
-PLANET = {name = nil, x = nil, y = nil, items = nil, icon = nil}
+PLANET = {name = nil, x = nil, y = nil, items = nil, icon = nil, x_off = nil, y_off = nil}
 PLANET.__index = PLANET
 
-local NAMES  = {"Bob","Omicron 8","Tyroid","Persus 4","Wisseau","Amina","Klandathu","Sigma 7","Decument","Kelvar","Romulax","Hellena","Ariax","Nilmen","Collosix","Naliux","Sirux","Watermux","Neptunia","Posidia"}
+local NAMES  = {
+                "Bob","Omicron 8","Tyroid","Persus 4","Wisseau","Amina","Klandathu","Sigma 7","Decument",
+                "Kelvar","Romulax","Hellena","Ariax","Nilmen","Collosix","Naliux","Sirux","Watermux","Neptunia",
+                "Posidia","Ares 5","Ki-pi","Marchus","Hannux",""
+            }
 
 local SOLAR_SYSTEM = {}
 
@@ -25,11 +29,12 @@ end
 
 --check to see if current x,y matches that of another planet
 local function checkPlanetXY(params,planet)
-    if planet.x == params.x and planet.y == params.y then
-        return true
-    else
-        return false
+    if params.x > (planet.x - 175) and params.x < (planet.x + 175) then
+        if params.y > (planet.y - 175) and params.y < (planet.y + 175) then
+            return true
+        end
     end
+    return false
 end
 
 --loop through solar_system and check function against each planet
@@ -49,7 +54,7 @@ local function getPlanetXY()
     repeat
         x = rand(0,WIDTH)
         y = rand(0,HEIGHT)
-    until(checkPlanets({x,y},checkPlanetXY) == false)
+    until(checkPlanets({x = x,y = y},checkPlanetXY) == false)
     return x,y
 end
 
@@ -65,7 +70,7 @@ end
 
 
 function PLANET:print()
-    love.graphics.draw(self.icon,self.x,self.y)
+    love.graphics.draw(self.icon,self.x,self.y,nil,nil,nil,self.x_off,self.y_off)
 end
 
 function printPlanets()
@@ -80,6 +85,8 @@ function PLANET:new()
     self.name     = getPlanetName() 
     self.items    = makePlanetItems()
     self.icon     = getPlanetIcon()
+    self.x_off    = self.icon:getWidth() / 2
+    self.y_off    = self.icon:getHeight() / 2
     return self
 end
 
