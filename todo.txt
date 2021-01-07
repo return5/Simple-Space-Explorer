@@ -19,3 +19,11 @@
     --show score
     --show money
     --show fuel
+--make screenshots
+--make README
+    --show screen shows
+    --tell about game
+    --give credit to graphics/audio sources
+    --tell dependencies
+--add license
+--player inputs name for ship
