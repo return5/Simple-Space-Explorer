@@ -2,7 +2,7 @@
 
 local Object = require("aux_files.object")
 
-SHIP = { speed = nil, attk = nil, def = nil,hostile = nil}
+SHIP = { speed = nil, attk = nil, def = nil,hostile = nil,fuel = nil}
 SHIP.__index = SHIP
 setmetatable(SHIP,OBJECT)
 
@@ -50,6 +50,7 @@ function SHIP:new(name,attk,hull,money,solar_system,rand,add)
     o.items    = items
     o.money    = money
     o.speed    = rand(70,110)
+    o.fuel     = rand(90,160)
     o.hostile  = rand(0,10) < 6 and false or true
     return o
 end

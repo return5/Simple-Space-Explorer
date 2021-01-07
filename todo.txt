@@ -1,0 +1,21 @@
+--fix audio of engine
+--add combat to game
+    --add ai controls
+    --add sound
+    --add lasers
+    --add damage
+    --add game over
+--add trading to game
+    --trading screen
+    --buy/sell goods
+    --check player/ai money
+--add border around edge of map
+--add minimap
+--add upgrading to game
+    --upgrade screen
+    --player increases hull,speed,weapons using parts bought
+--add score
+--ad u.i.
+    --show score
+    --show money
+    --show fuel

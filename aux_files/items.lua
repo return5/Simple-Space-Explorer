@@ -20,6 +20,11 @@ function ITEM:new(name,func,price,quant)
     return self
 end
 
+--player can buy fuel for their ship
+function getFuel()
+    --to do
+end
+
 --Make a Rare ITEM object
 local function makeRareItem(rand)
     local i = rand(1,#RARE_ITEMS)
@@ -182,13 +187,20 @@ local function makeUpgradedEngine(rand)
     return ITEM:new(name,upgradeEngine,price,1)
 end
 
+function makeFuel(rand)
+    local quant = rand(40,240)
+    local name  = "Fuel"
+    local price = rand(1,15)
+    return ITEM:new(name,getFuel,price,quant)
+end
+
 --update the number of and item in inventory
 local function updateQuantity(i,item,inv)
     inv[i].quant = inv[i].quant + item.quant
 end
 
 --checks for a given item in inv and if found returns the index of that item
-local function checkForItem(item,inv)
+function checkForItem(item,inv)
     for i=1,#inv,1 do
         if inv[i].name == item.name then
             return i
@@ -199,13 +211,15 @@ end
 
 --Randomly select a new ITEM object to create
 local function getRandItem(rand)
-   local n = rand(0,17)
+   local n = rand(0,22)
    if n < 5 then
        return makeUpgradedEngine(rand)
    elseif n < 10 then
        return makeUpgradedHull(rand)
    elseif n < 15 then
        return makeUpgradedWeapon(rand)
+   elseif n < 20 then
+       return makeFuel(rand)
    else
        return makeRareItem(rand)
    end

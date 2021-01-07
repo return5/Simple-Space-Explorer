@@ -48,14 +48,23 @@ local function movePlayerShip(dt)
     PLAYER.y     = PLAYER.y + PLAYER.speed * sin * dt
 end
 
+local function useUpFuel()
+    PLAYER.fuel = PLAYER.fuel - 1
+end
+
 --if flying in outerspace then get direction and move ship
 local function playerShipSpace(dt)
     getDirection()
     if love.keyboard.isScancodeDown("w") then
         movePlayerShip(dt)
-    elseif love.keyboard.isScancodeDown("i") then
-        DRAW_INV   = true
-        DRAW_SPACE = false
+        useUpFuel()
+        ENGINE_SOUND:play()
+    else
+        ENGINE_SOUND:stop()
+        if love.keyboard.isScancodeDown("i") then
+            DRAW_INV   = true
+            DRAW_SPACE = false
+        end
     end
 end
 
@@ -82,5 +91,6 @@ function love.load()
     SOLAR_SYSTEM = makeSolarSystem()              --list of all planets
     PLAYER       = makePlayerShip(SOLAR_SYSTEM)   --player ship
     SHIPS        = makeComputerShips(SOLAR_SYSTEM)   --list of non player controlled ships
+    ENGINE_SOUND = love.audio.newSource("/sounds/Engine_sound.mp3","static")
 end
 
