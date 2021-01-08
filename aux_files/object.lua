@@ -2,10 +2,18 @@
 
 local Items  = require("aux_files.items")
 
-OBJECT = {name = nil, x = nil, y = nil, inv = nil, icon = nil, x_off = nil, y_off = nil,angle = nil,discovered = false}
+OBJECT = {name = nil, x = nil, y = nil, inv = nil, icon = nil, x_off = nil, y_off = nil,angle = nil,discovered = false, buy = nil}
 OBJECT.__index = OBJECT
 
-
+--checks if player ship is touching the object
+function checkIfPlayerIsTouching(obj,player)
+    if player.x < obj.x + obj.x_off and player.x >= obj.x then
+        if player.y < obj.y + obj.y_off and player.y >= obj.y then
+            return true
+        end
+    end
+    return false
+end
 
 --checks to see if current name matches that of obj
 function checkName(obj,params)
@@ -31,11 +39,11 @@ function iterateObjects(objects,params,func)
     if objects ~= nil then
         for i=1,#objects,1 do
             if func(objects[i],params) == true then
-                return true
+                return i
             end
         end
     end
-    return false
+    return -1
 end
 
 --make a new random x,y for an object
@@ -46,7 +54,7 @@ local function makeXY(rand,solar_system,ships)
         x = rand(1,WIDTH)
         y = rand(1,HEIGHT)
         local params = {x = x, y = y}
-    until(iterateObjects(solar_system,params,check) == false and iterateObjects(ships,params,check) == false)
+    until(iterateObjects(solar_system,params,check) == -1 and iterateObjects(ships,params,check) == -1)
     return x,y
 end
 
@@ -61,6 +69,7 @@ function OBJECT:new(icon,name,rand,add,max,solar_system,ships)
     self.angle     =  -3.14 + math.random() * (3.14 * 2) 
     self.x_off     = self.icon:getWidth() / 2
     self.y_off     = self.icon:getHeight() / 2
+    self.buy       = makeBuyable(rand,add,max)
     return self
 end
 

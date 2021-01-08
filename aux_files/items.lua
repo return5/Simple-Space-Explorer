@@ -234,14 +234,30 @@ function makeInv(rand,add,max)
     local getRand   = getRandItem
     for i=1,n,1 do
         local item = getRand(rand)
-        local i    = checkitem(item,inv)
-        if i == -1 then
+        local j    = checkitem(item,inv)
+        if j == -1 then
             add(inv,item)
         else
-            upquant(i,item,inv)
+            upquant(j,item,inv)
         end
     end
     return inv
+end
+
+function makeBuyable(rand,add,max)
+    local n         = rand(0,max)
+    local name      = {name = nil}
+    local buy       = {}
+    local checkitem = checkForItem
+    local j         = -1
+    for i=1,n,1 do
+        name.name = RARE_ITEMS[rand(1,#RARE_ITEMS)]
+        repeat
+            j = checkitem(name,buy)
+        until(j == -1)
+        add(buy,name.name)
+    end
+    return buy
 end
 
 --player uses an upgrade item to upgrade their ship

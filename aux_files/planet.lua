@@ -23,7 +23,7 @@ local function getPlanetName(rand)
     local name
     repeat
         name = PLANET_NAMES[rand(1,#PLANET_NAMES)]
-    until(iterateObjects(SOLAR_SYSTEM,{name = name},checkName) == false)
+    until(iterateObjects(SOLAR_SYSTEM,{name = name},checkName) == -1)
     return name
 end
 
@@ -31,6 +31,10 @@ function PLANET:new(rand,add)
     local name  = getPlanetName(rand) 
     local icon  = getPlanetIcon(rand)
     local o     = setmetatable(OBJECT:new(icon,name,rand,add,6,SOLAR_SYSTEM,nil),PLANET)
+    --make usre planet has tradebale items for player
+    while o.inv == nil or #o.inv == 0 do
+        o.inv = makeInv(rand,add,6) 
+    end
     --search planet for fuel in its inventory
     local i = checkForItem({name = "Fuel"},o.inv)
     --if planet has no fuel to sell then make some

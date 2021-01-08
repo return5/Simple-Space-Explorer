@@ -21,7 +21,7 @@ local function makeShipName(rand)
     local name
     repeat
         name = SHIP_NAMES[rand(1,#SHIP_NAMES)]
-    until(iterateObjects(SHIPS,{name = name},checkName) == false)
+    until(iterateObjects(SHIPS,{name = name},checkName) == -1)
     return name
 end
 

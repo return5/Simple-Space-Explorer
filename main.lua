@@ -1,9 +1,17 @@
 local Planets = require("aux_files.planet")
 local Ships   = require("aux_files.ship")
+local Trade   = require("aux_files.trade")
+
 local WINDOW_WIDTH  = 800
 local WINDOW_HEIGHT = 800
 local drawFunc
+local TRADE_PARTNER
 
+
+local function drawTradeScreen()
+    
+
+end
 
 --draw open space with ships and planets.
 local function drawSpace()
@@ -48,6 +56,7 @@ local function movePlayerShip(dt)
     PLAYER.y     = PLAYER.y + PLAYER.speed * sin * dt
 end
 
+--as player flys around decrease the ammount of fuel
 local function useUpFuel()
     PLAYER.fuel = PLAYER.fuel - 1
 end
@@ -64,6 +73,8 @@ local function playerShipSpace(dt)
         if love.keyboard.isScancodeDown("i") then
             DRAW_INV   = true
             DRAW_SPACE = false
+        elseif love.keyboard.isScancodeDown("t") then
+            TRADE_PARTNER = checkForTrade()
         end
     end
 end
@@ -74,6 +85,8 @@ function love.update(dt)
         drawFunc = drawSpace
     elseif DRAW_INV == true and PLAYER.inv ~= nil then
         drawFunc = drawInventory
+    elseif DRAW_TRADE == true then
+        drawFunc = drawTradeScreen
     end
 end
 
@@ -82,15 +95,15 @@ function love.load()
     math.randomseed(os.time())
     HEIGHT       = 3000     --height of entire game world
     WIDTH        = 3000     --width of entire game world
-    DRAW_SPACE   = true     --should open space screen be drawn
-    DRAW_INV     = false    --should inventory screen be drawn
-    DRAW_TRADE   = false    -- should trade screen be drawn
     HALF_W       = WINDOW_WIDTH / 2  --half the width of the window
     HALF_H       = WINDOW_HEIGHT / 2 --half the height of window
     love.window.setMode(WINDOW_WIDTH,WINDOW_HEIGHT)
     SOLAR_SYSTEM = makeSolarSystem()              --list of all planets
     PLAYER       = makePlayerShip(SOLAR_SYSTEM)   --player ship
     SHIPS        = makeComputerShips(SOLAR_SYSTEM)   --list of non player controlled ships
-    ENGINE_SOUND = love.audio.newSource("/sounds/Engine_sound.mp3","static")
+    ENGINE_SOUND = love.audio.newSource("/sounds/Engine.flac","static")
+    DRAW_TRADE    = false    -- should trade screen be drawn
+    DRAW_SPACE    = true     --should open space screen be drawn
+    DRAW_INV      = false    --should inventory screen be drawn
 end
 
