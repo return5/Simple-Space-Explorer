@@ -2,44 +2,28 @@ local Planets = require("aux_files.planet")
 local Ships   = require("aux_files.ship")
 local Trade   = require("aux_files.trade")
 
+local TRADE_PARTNER
+local DRAWFUNC
 local WINDOW_WIDTH  = 800
 local WINDOW_HEIGHT = 800
-local drawFunc
-local TRADE_PARTNER
 
 
-local function drawTradeScreen()
-    
+local function tradeScreen()
+    drawInventory(PLAYER,TRADE_PARTNER)
+end
 
+local function playerInventory()
+    drawInventory(PLAYER)
 end
 
 --draw open space with ships and planets.
-local function drawSpace()
+local function openSpace()
     love.graphics.translate(-PLAYER.x + HALF_W, -PLAYER.y + HALF_H)
     printObjects(SHIPS,PLAYER)
     printObjects(SOLAR_SYSTEM,PLAYER)
     PLAYER:print(PLAYER)
 end
-
---prints player inventory selection screen
-local function drawInventory()
-    love.graphics.setNewFont(20)
-    love.graphics.print("player inventory:",4,1)
-    love.graphics.setNewFont()
-    for i=1,#PLAYER.inv,1 do
-        love.graphics.print(PLAYER.inv[i].name,22, 10 + 20 * i)
-    end
-    love.graphics.print("press esc to exit.", 4, 10 + 20 * (#PLAYER.inv + 1))
-    if love.keyboard.isScancodeDown("escape") then
-        DRAW_INV   = false
-        DRAW_SPACE = true
-    end
-end
-
-function love.draw(dt)
-    drawFunc()
-end
-
+--
 --get the direction which the ship should face based on the location of the mouse
 local function getDirection()
     local mouse_x = love.mouse.getX() + PLAYER.x - HALF_W
@@ -71,22 +55,29 @@ local function playerShipSpace(dt)
     else
         ENGINE_SOUND:stop()
         if love.keyboard.isScancodeDown("i") then
-            DRAW_INV   = true
-            DRAW_SPACE = false
+            DRAW_INV = true
         elseif love.keyboard.isScancodeDown("t") then
-            TRADE_PARTNER = checkForTrade()
+            TRADE_PARTNER =  checkForTrade()
+            if trade_partner ~= -1 then
+                DRAW_INV   = false
+                DRAW_TRADE = true
+            end
         end
     end
 end
 
+function love.draw(dt)
+    DRAWFUNC()
+end
+
 function love.update(dt)
-    if DRAW_SPACE == true then
-        playerShipSpace(dt)
-        drawFunc = drawSpace
-    elseif DRAW_INV == true and PLAYER.inv ~= nil then
-        drawFunc = drawInventory
+    if DRAW_INV == true then
+        DRAWFUNC = playerInventory
     elseif DRAW_TRADE == true then
-        drawFunc = drawTradeScreen
+        DRAWFUNC = tradeScreen
+    elseif DRAW_SPACE == true then
+        playerShipSpace(dt)
+        DRAWFUNC = openSpace
     end
 end
 
@@ -102,8 +93,8 @@ function love.load()
     PLAYER       = makePlayerShip(SOLAR_SYSTEM)   --player ship
     SHIPS        = makeComputerShips(SOLAR_SYSTEM)   --list of non player controlled ships
     ENGINE_SOUND = love.audio.newSource("/sounds/Engine.flac","static")
-    DRAW_TRADE    = false    -- should trade screen be drawn
-    DRAW_SPACE    = true     --should open space screen be drawn
-    DRAW_INV      = false    --should inventory screen be drawn
+    DRAW_TRADE   = false    -- should trade screen be drawn
+    DRAW_SPACE   = true     --should open space screen be drawn
+    DRAW_INV     = false    --should inventory screen be drawn
 end
 

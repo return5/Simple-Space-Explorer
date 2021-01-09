@@ -59,7 +59,7 @@ end
 function makePlayerShip(solar_system)
     local rand   = math.random
     local name   = "return5"--getPlayerShipName() 
-    local attk   = rand(5,10)
+    local attk   = rand(5,15)
     local hull   = rand(70,150)
     local money  = rand(200,600)
     local ship   = SHIP:new(name,attk,hull,money,solar_system,rand,table.insert)
@@ -76,7 +76,7 @@ function makeComputerShips(solar_system)
         local attk   = rand(2,15)
         local hull   = rand(45,200)
         local name   = makeShipName(rand)
-        local money  = rand(300,800)
+        local money  = rand(600,1200)
         local ship   = SHIP:new(name,attk,hull,money,solar_system,rand,add)
         add(SHIPS,ship)
     end

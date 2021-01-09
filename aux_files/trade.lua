@@ -1,5 +1,8 @@
 --File contains function  for trading between player of other ships or planets
 
+
+
+
 local function tradeWithObject(obj)
 
 end
