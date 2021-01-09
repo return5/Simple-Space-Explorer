@@ -1,5 +1,6 @@
 local Object = require("aux_files.object")
 
+local SOLAR_SYSTEM = {}
 PLANET = {}
 PLANET.__index = PLANET
 setmetatable(PLANET,OBJECT)
@@ -10,7 +11,6 @@ local PLANET_NAMES  = {
                 "Posidia","Ares 5","Ki-pi","Marchus","Hannux",""
             }
 
-local SOLAR_SYSTEM = {}
 
 local function getPlanetIcon(rand)
     local i    = rand(1,38)
@@ -53,5 +53,4 @@ function makeSolarSystem()
     end
     return SOLAR_SYSTEM
 end
-
 

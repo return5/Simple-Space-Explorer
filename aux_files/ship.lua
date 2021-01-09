@@ -82,5 +82,4 @@ function makeComputerShips(solar_system)
     end
     return SHIPS
 end
-        
 
