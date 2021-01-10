@@ -246,16 +246,16 @@ end
 
 function makeBuyable(rand,add,max)
     local n         = rand(0,max)
-    local name      = {name = nil}
     local buy       = {}
     local checkitem = checkForItem
     local j         = -1
     for i=1,n,1 do
-        name.name = RARE_ITEMS[rand(1,#RARE_ITEMS)]
+        local name = {name = nil}
         repeat
+            name.name = RARE_ITEMS[rand(1,#RARE_ITEMS)]
             j = checkitem(name,buy)
         until(j == -1)
-        add(buy,name.name)
+        add(buy,name)
     end
     return buy
 end

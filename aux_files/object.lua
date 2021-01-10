@@ -8,8 +8,8 @@ OBJECT.__index = OBJECT
 
 --checks if player ship is touching the object
 function checkIfPlayerIsTouching(obj,player)
-    if player.x < obj.x + obj.x_off and player.x >= obj.x then
-        if player.y < obj.y + obj.y_off and player.y >= obj.y then
+    if player.x < obj.x + obj.x_off and player.x >= obj.x  - obj.x_off then
+        if player.y < obj.y + obj.y_off and player.y >= obj.y - obj.y_off then
             return true
         end
     end
@@ -36,8 +36,8 @@ function checkIfOverlap(object,params)
 end
 
 local function printInventoryItem(inv_item,loc)
-    love.graphics.print(inv_item.name,22,loc[1])
-    loc[1] = loc[1] + 20
+    love.graphics.print(inv_item.name,loc[1],loc[2])
+    loc[2] = loc[2] + 20
 end
 
 --iterate over a list of objects. call func on each item, if that function returns true then return true from here
@@ -53,19 +53,20 @@ function iterateObjects(objects,params,func)
 end
 
 --prints inventory of the object to screen
-function drawInventory(obj)
+function drawInventory(inv,inv_string,start_x,start_y)
     love.graphics.setNewFont(20)
-    love.graphics.print(obj.name .. "'s inventory:",4,1)
+    love.graphics.print(inv_string,start_x,start_y)
     love.graphics.setNewFont()
     local i = 1
-    if obj.inv ~= nil then
-        iterateObjects(obj.inv,{30},printInventoryItem)
-        i = #obj.inv
+    if inv ~= nil then
+        iterateObjects(inv,{start_x + 4,start_y + 30},printInventoryItem)
+        i = #inv
     end
-    love.graphics.print("press esc to exit.", 4, 10 + 20 * (i + 1))
     if love.keyboard.isScancodeDown("escape") then
         DRAW_INV   = false
+        DRAW_TRADE = false
     end
+    return i
 end
 
 --make a new random x,y for an object

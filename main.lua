@@ -2,19 +2,11 @@ local Planets = require("aux_files.planet")
 local Ships   = require("aux_files.ship")
 local Trade   = require("aux_files.trade")
 
-local TRADE_PARTNER
 local DRAWFUNC
 local WINDOW_WIDTH  = 800
 local WINDOW_HEIGHT = 800
 
 
-local function tradeScreen()
-    drawInventory(PLAYER,TRADE_PARTNER)
-end
-
-local function playerInventory()
-    drawInventory(PLAYER)
-end
 
 --draw open space with ships and planets.
 local function openSpace()
@@ -57,11 +49,7 @@ local function playerShipSpace(dt)
         if love.keyboard.isScancodeDown("i") then
             DRAW_INV = true
         elseif love.keyboard.isScancodeDown("t") then
-            TRADE_PARTNER =  checkForTrade()
-            if trade_partner ~= -1 then
-                DRAW_INV   = false
-                DRAW_TRADE = true
-            end
+            playerPressedT()
         end
     end
 end
@@ -96,5 +84,6 @@ function love.load()
     DRAW_TRADE   = false    -- should trade screen be drawn
     DRAW_SPACE   = true     --should open space screen be drawn
     DRAW_INV     = false    --should inventory screen be drawn
+    TRADE_PARTNER = PLAYER
 end
 
