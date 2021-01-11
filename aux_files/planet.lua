@@ -8,7 +8,7 @@ setmetatable(PLANET,OBJECT)
 local PLANET_NAMES  = {
                 "Bob","Omicron 8","Tyroid","Perseus 4","Wisseau","Amina","Klandathu","Sigma 7","Decument",
                 "Kelvar","Romulax","Hellena","Ariax","Nilmen","Collosix","Naliux","Sirux","Watermux","Neptunia",
-                "Posidia","Ares 5","Ki-pi","Marchus","Hannux",""
+                "Posidia","Ares 5","Ki-pi","Marchus","Hannux"
             }
 
 

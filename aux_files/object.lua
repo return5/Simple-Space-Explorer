@@ -2,7 +2,10 @@
 
 local Items  = require("aux_files.items")
 
-OBJECT = {name = nil, x = nil, y = nil, inv = nil, icon = nil, x_off = nil, y_off = nil,angle = nil,discovered = false, buy = nil}
+OBJECT = {
+            name = nil, x = nil, y = nil, inv = nil, icon = nil, x_off = nil, y_off = nil,
+            angle = nil,discovered = false, buy = nil,sell_canvas = nil, buy_canvas = nil
+        }
 OBJECT.__index = OBJECT
 
 
@@ -35,9 +38,12 @@ function checkIfOverlap(object,params)
     return false
 end
 
-local function printInventoryItem(inv_item,loc)
-    love.graphics.print(inv_item.name,loc[1],loc[2])
-    loc[2] = loc[2] + 20
+local function printInventoryItem(inv_item,params)
+    love.graphics.print(inv_item.name,params[1],params[2])
+    if params[3] == true then
+        love.graphics.print(inv_item.price,params[1] + (inv_item.name:len()) + 30 ,params[2])
+    end
+    params[2] = params[2] + 20
 end
 
 --iterate over a list of objects. call func on each item, if that function returns true then return true from here
@@ -53,13 +59,13 @@ function iterateObjects(objects,params,func)
 end
 
 --prints inventory of the object to screen
-function drawInventory(inv,inv_string,start_x,start_y)
+function drawInventory(inv,inv_string,start_x,start_y,show_price)
     love.graphics.setNewFont(20)
     love.graphics.print(inv_string,start_x,start_y)
     love.graphics.setNewFont()
     local i = 1
     if inv ~= nil then
-        iterateObjects(inv,{start_x + 4,start_y + 30},printInventoryItem)
+        iterateObjects(inv,{start_x + 4,start_y + 30,show_price},printInventoryItem)
         i = #inv
     end
     if love.keyboard.isScancodeDown("escape") then
@@ -81,45 +87,45 @@ local function makeXY(rand,solar_system,ships)
     return x,y
 end
 
+local function makeCanvas(inv,title)
+    local canvas = love.graphics.newCanvas(MAIN_FONT:getWidth(title .. "    "),WINDOW_HEIGHT)
+    love.graphics.setCanvas(canvas)
+    love.graphics.print(title,1,1)
+    if inv ~= nil then
+        for i=1,#inv,1 do
+            love.graphics.print(inv[i].name,4,10 + 20 * i)
+        end
+    end
+    love.graphics.setCanvas()
+    return canvas
+end
+
 --make new OBJECT object
 function OBJECT:new(icon,name,rand,add,max,solar_system,ships)
-    self           = setmetatable({},OBJECT)
-    self.x,self.y  = makeXY(rand,solar_system,ships)
-    self.name      = name 
-    self.inv       = makeInv(rand,add,max)
-    self.icon      = icon 
+    self             = setmetatable({},OBJECT)
+    self.x,self.y    = makeXY(rand,solar_system,ships)
+    self.name        = name 
+    self.inv         = makeInv(rand,add,max)
+    self.icon        = icon 
     --set a random angle for the object to be at.
-    self.angle     =  -3.14159 + rand() * 6.28318 
-    self.x_off     = self.icon:getWidth() / 2
-    self.y_off     = self.icon:getHeight() / 2
-    self.buy       = makeBuyable(rand,add,max)
+    self.angle       =  -3.14159 + rand() * 6.28318 
+    self.x_off       = self.icon:getWidth() / 2
+    self.y_off       = self.icon:getHeight() / 2
+    self.buy         = makeBuyable(rand,add,max)
+    self.buy_canvas  = makeCanvas(self.buy,self.name .. " is buying:")
+    self.sell_canvas = makeCanvas(self.buy,self.name .. " is selling:")
     return self
 end
 
---checks to see if current object is visible to the plaer
-local function checkIfVisible(player,obj)
-    if obj.y < player.y + HALF_H  and obj.y > player.y - HALF_H then
-        if obj.x < player.x + HALF_W  and obj.x > player.x - HALF_W  then
-            return true
-        end
-    end
-    return false
-end
-
 --prints current object to screen
-function OBJECT:print(player)
-    --only print items which are visible or the player's ship
-    if player == nil or checkIfVisible(player,self) == true then
-        love.graphics.print(self.name,self.x - self.x_off,self.y - self.y_off - 15) 
-        love.graphics.draw(self.icon,self.x,self.y,self.angle,nil,nil,self.x_off,self.y_off)
-        if self.discovered == false then
-            self.discovered = true
-        end
-    end
+function OBJECT:print()
+    love.graphics.print(self.name,self.x - self.x_off,self.y - self.y_off - 15) 
+    love.graphics.draw(self.icon,self.x,self.y,self.angle,nil,nil,self.x_off,self.y_off)
 end
 
 --iterate over a list of Objects and call its print function
-function printObjects(objs,player)
+function printObjects(objs,canvas)
+    love.graphics.setCanvas(canvas)
     for i=1,#objs,1 do
         objs[i]:print(player)
     end

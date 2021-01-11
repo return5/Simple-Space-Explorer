@@ -27,16 +27,14 @@ end
 
 function tradeScreen()
     local player_string = PLAYER.name .. "'s Inventory:"
-    local trade_string  = TRADE_PARTNER.name .. "'s Inventory:" 
-    local buy_string    = TRADE_PARTNER.name .. " is buying:"
-    local i             = drawInventory(PLAYER.inv,player_string,1,1)
-    drawInventory(TRADE_PARTNER.inv,trade_string,player_string:len() * 12,1)
-    drawInventory(TRADE_PARTNER.buy,buy_string,(player_string:len() + trade_string:len()) * 12,1)
+    local i             = drawInventory(PLAYER.inv,player_string,1,1,false)
     love.graphics.print("press esc to exit.", 4,30 * (i + 1))
+    love.graphics.draw(TRADE_PARTNER.sell_canvas,MAIN_FONT:getWidth(player_string .. "   "),1)
+    love.graphics.draw(TRADE_PARTNER.buy_canvas,TRADE_PARTNER.sell_canvas:getWidth())
 end
 
 function playerInventory()
-    local i = drawInventory(PLAYER.inv,PLAYER.name .. "'s Inventory:" ,1,1)
+    local i = drawInventory(PLAYER.inv,PLAYER.name .. "'s Inventory:" ,1,1,false)
     love.graphics.print("press esc to exit.",4,30 * (i + 1))
 end
 
