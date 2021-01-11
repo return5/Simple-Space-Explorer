@@ -7,22 +7,15 @@ local function tradeWithObject(obj)
 
 end
 
-local function checkForTrade()
-    local params = {x = PLAYER.x,y = PLAYER.y} 
-    local i      = iterateObjects(SOLAR_SYSTEM,params,checkIfPlayerIsTouching)
-    local trade_partner
-    if i ~= -1 then
-        trade_partner = SOLAR_SYSTEM[i]
-    else
-        i = iterateObjects(SHIPS,params,checkIfPlayerIsTouching)
-        if i ~= -1 then
-           trade_partner = SHIPS[i]
+function checkForTradePartner(partners)
+    local params        = {x = PLAYER.x,y = PLAYER.y} 
+    for i = 1, #partners,1 do
+        local j = iterateObjects(partners[i],params,checkIfPlayerIsTouching)
+        if j ~= -1 then
+            return partners[i][j]
         end
     end
-    if trade_partner ~= nil and trade_partner.inv ~= nil then
-        DRAW_TRADE = true
-    end
-    return trade_partner
+    return nil
 end
 
 
@@ -38,8 +31,5 @@ function tradeScreen()
     drawObjectCanvas(TRADE_PARTNER.buy,p_width + TRADE_PARTNER.sell_canvas:getWidth() + 20,TRADE_PARTNER.buy_canvas)
 end
 
-function playerPressedT()
-    TRADE_PARTNER = checkForTrade()
-end
 
 

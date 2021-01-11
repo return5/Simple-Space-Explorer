@@ -50,7 +50,7 @@ function SHIP:new(name,attk,hull,money,solar_system,rand,add)
     o.items    = items
     o.money    = money
     o.speed    = rand(70,110)
-    o.fuel     = rand(90,160)
+    o.fuel     = rand(500,1500)
     o.hostile  = rand(0,10) < 6 and false or true
     return o
 end

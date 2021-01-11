@@ -3,16 +3,20 @@ local Ships   = require("aux_files.ship")
 local Trade   = require("aux_files.trade")
 
 local DRAWFUNC
+local WINDOW_WIDTH  = 800
+local WINDOW_HEIGHT = 800
 local CANVASES      = {planets = nil, ships = nil}
 
 
 
 --draw open space with ships and planets.
 local function openSpace()
+    love.graphics.print("player's fuel is: " .. PLAYER.fuel,1,1)
     love.graphics.translate(-PLAYER.x + HALF_W, -PLAYER.y + HALF_H)
     love.graphics.draw(CANVASES.planets)
     love.graphics.draw(CANVASES.ships)
     PLAYER:print(PLAYER)
+    love.graphics.draw(THRUSTER,PLAYER.x - PLAYER.x_off * 2,PLAYER.y + PLAYER.y_off * 2,PLAYER.angle,nil,nil,THRUSTER:getWidth() / 2,THRUSTER:getHeight() / 2) 
 end
 --
 --get the direction which the ship should face based on the location of the mouse
@@ -23,8 +27,12 @@ local function getDirection()
     PLAYER.angle  = angle
 end
 
---move the Player's ship forward
-local function movePlayerShip(dt)
+local function printPlayerThruster()
+   love.graphics.draw(THRUSTER,PLAYER.x,PLAYER.y,-PLAYER.angle,nil,nil,nil,nil) 
+end
+
+--when player ship is moving, update it's x and y'
+local function updatePlayerShipLocation(dt)
     local cos    = math.cos(PLAYER.angle)
     local sin    = math.sin(PLAYER.angle) 
     PLAYER.x     = PLAYER.x + PLAYER.speed * cos * dt
@@ -36,20 +44,13 @@ local function useUpFuel()
     PLAYER.fuel = PLAYER.fuel - 1
 end
 
---if flying in outerspace then get direction and move ship
-local function playerShipSpace(dt)
-    getDirection()
-    if love.keyboard.isScancodeDown("w") then
-        movePlayerShip(dt)
+--move the Player's ship forward
+local function movePlayerShip(dt)
+    if PLAYER.fuel > 0  then
+        updatePlayerShipLocation(dt)
         useUpFuel()
+        --printPlayerThruster()
         ENGINE_SOUND:play()
-    else
-        ENGINE_SOUND:stop()
-        if love.keyboard.isScancodeDown("i") then
-            DRAW_INV = true
-        elseif love.keyboard.isScancodeDown("t") then
-            playerPressedT()
-        end
     end
 end
 
@@ -65,14 +66,37 @@ function love.draw(dt)
     DRAWFUNC()
 end
 
+function playerPressedT()
+    TRADE_PARTNER = checkForTradePartner({SOLAR_SYSTEM,SHIPS})
+    if TRADE_PARTNER ~= nil then
+        DRAW_TRADE = true
+    end
+end
+
+function love.keypressed(_,scancode)
+    if scancode == "t" then
+        playerPressedT()
+    elseif scancode == "i" then
+        DRAW_INV = not DRAW_INV
+    elseif scancode == "escape" then
+        DRAW_INV   = false
+        DRAW_TRADE = false
+    end
+end
+
 function love.update(dt)
     if DRAW_INV == true then
         DRAWFUNC = playerInventory
     elseif DRAW_TRADE == true then
         DRAWFUNC = tradeScreen
     elseif DRAW_SPACE == true then
-        playerShipSpace(dt)
+        getDirection()
         DRAWFUNC = openSpace
+        if love.keyboard.isScancodeDown('w') then
+            movePlayerShip(dt)
+        else
+            ENGINE_SOUND:stop()
+        end
     end
 end
 
@@ -80,11 +104,10 @@ function love.load()
     math.randomseed(os.time())
     HEIGHT        = 3000     --height of entire game world
     WIDTH         = 3000     --width of entire game world
-    WINDOW_WIDTH  = 800
-    WINDOW_HEIGHT = 800
     HALF_W        = WINDOW_WIDTH / 2  --half the width of the window
     HALF_H        = WINDOW_HEIGHT / 2 --half the height of window
     love.window.setMode(WINDOW_WIDTH,WINDOW_HEIGHT)
+    love.keyboard.setKeyRepeat(true)
     LARGE_FONT    = love.graphics.newFont(20)
     SOLAR_SYSTEM  = makeSolarSystem()              --list of all planets
     SHIPS         = makeComputerShips(SOLAR_SYSTEM)   --list of non player controlled ships
@@ -94,6 +117,8 @@ function love.load()
     DRAW_TRADE    = false    -- should trade screen be drawn
     DRAW_SPACE    = true     --should open space screen be drawn
     DRAW_INV      = false    --should inventory screen be drawn
-    TRADE_PARTNER = PLAYER
+    TRADE_PARTNER = nil
+    PLAYER_MOVE   = false
+    THRUSTER      = love.graphics.newImage("/img/effects/thrust.png")
 end
 

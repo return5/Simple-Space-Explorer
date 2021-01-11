@@ -60,7 +60,7 @@ function iterateObjects(objects,params,func)
 end
 
 --prints inventory of the object to canvas
-local function drawInventory(inv,start_x,canvas)
+local function drawInventory(inv,canvas)
     if inv ~= nil then
         love.graphics.setCanvas(canvas)
         iterateObjects(inv,{10,LARGE_FONT:getHeight() + 10,false},printInventoryItem)
@@ -93,7 +93,7 @@ end
 --make new OBJECT object
 function OBJECT:new(icon,name,rand,add,max,solar_system,ships)
     local o       = setmetatable({},OBJECT)
-    o.x,o.y    = makeXY(rand,solar_system,ships)
+    o.x,o.y       = makeXY(rand,solar_system,ships)
     o.name        = name 
     o.inv         = makeInv(rand,add,max)
     o.icon        = icon 
@@ -124,7 +124,7 @@ end
 
 --draws teh buy/sell canvas of an object
 function drawObjectCanvas(inv,start_x,canvas)
-    drawInventory(inv,start_x,canvas)
+    drawInventory(inv,canvas)
     love.graphics.draw(canvas,start_x,1)
 end
 
