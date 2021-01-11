@@ -25,25 +25,21 @@ local function checkForTrade()
     return trade_partner
 end
 
-function tradeScreen()
-    local player_string = PLAYER.name .. "'s Inventory:"
-    local i             = drawInventory(PLAYER.inv,player_string,1,1,false)
-    love.graphics.print("press esc to exit.", 4,30 * (i + 1))
-    love.graphics.draw(TRADE_PARTNER.sell_canvas,MAIN_FONT:getWidth(player_string .. "   "),1)
-    love.graphics.draw(TRADE_PARTNER.buy_canvas,TRADE_PARTNER.sell_canvas:getWidth())
-end
 
 function playerInventory()
-    local i = drawInventory(PLAYER.inv,PLAYER.name .. "'s Inventory:" ,1,1,false)
-    love.graphics.print("press esc to exit.",4,30 * (i + 1))
+    drawObjectCanvas(PLAYER.inv,1,PLAYER.sell_canvas)
+    love.graphics.print("press esc to exit.", 5,LARGE_FONT:getHeight() + 10 + (20 * (#PLAYER.inv + 1)))
+end
+
+function tradeScreen()
+    local p_width = PLAYER.sell_canvas:getWidth() + 20
+    playerInventory()
+    drawObjectCanvas(TRADE_PARTNER.inv,p_width,TRADE_PARTNER.sell_canvas)
+    drawObjectCanvas(TRADE_PARTNER.buy,p_width + TRADE_PARTNER.sell_canvas:getWidth() + 20,TRADE_PARTNER.buy_canvas)
 end
 
 function playerPressedT()
     TRADE_PARTNER = checkForTrade()
-    if TRADE_PARTNER ~= nil then
-        DRAW_INV   = false
-        DRAW_TRADE = true
-    end
 end
 
 

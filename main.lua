@@ -85,10 +85,10 @@ function love.load()
     HALF_W        = WINDOW_WIDTH / 2  --half the width of the window
     HALF_H        = WINDOW_HEIGHT / 2 --half the height of window
     love.window.setMode(WINDOW_WIDTH,WINDOW_HEIGHT)
-    MAIN_FONT     = love.graphics.newFont()
+    LARGE_FONT    = love.graphics.newFont(20)
     SOLAR_SYSTEM  = makeSolarSystem()              --list of all planets
-    PLAYER        = makePlayerShip(SOLAR_SYSTEM)   --player ship
     SHIPS         = makeComputerShips(SOLAR_SYSTEM)   --list of non player controlled ships
+    PLAYER        = makePlayerShip(SOLAR_SYSTEM)   --player ship
     printObjectsToCanvas()
     ENGINE_SOUND  = love.audio.newSource("/sounds/Engine.flac","static")
     DRAW_TRADE    = false    -- should trade screen be drawn

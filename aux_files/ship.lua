@@ -63,7 +63,7 @@ function makePlayerShip(solar_system)
     local hull   = rand(70,150)
     local money  = rand(200,600)
     local ship   = SHIP:new(name,attk,hull,money,solar_system,rand,table.insert)
-    --ship.inv     = nil
+    --ship.inv     = ni
     return ship
 end
 

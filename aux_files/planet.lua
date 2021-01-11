@@ -31,7 +31,7 @@ function PLANET:new(rand,add)
     local name  = getPlanetName(rand) 
     local icon  = getPlanetIcon(rand)
     local o     = setmetatable(OBJECT:new(icon,name,rand,add,6,SOLAR_SYSTEM,nil),PLANET)
-    --make usre planet has tradebale items for player
+    --make sure planet has tradebale items for player
     while o.inv == nil or #o.inv == 0 do
         o.inv = makeInv(rand,add,6) 
     end

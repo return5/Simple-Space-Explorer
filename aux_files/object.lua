@@ -44,6 +44,7 @@ local function printInventoryItem(inv_item,params)
         love.graphics.print(inv_item.price,params[1] + (inv_item.name:len()) + 30 ,params[2])
     end
     params[2] = params[2] + 20
+    return false
 end
 
 --iterate over a list of objects. call func on each item, if that function returns true then return true from here
@@ -58,21 +59,13 @@ function iterateObjects(objects,params,func)
     return -1
 end
 
---prints inventory of the object to screen
-function drawInventory(inv,inv_string,start_x,start_y,show_price)
-    love.graphics.setNewFont(20)
-    love.graphics.print(inv_string,start_x,start_y)
-    love.graphics.setNewFont()
-    local i = 1
+--prints inventory of the object to canvas
+local function drawInventory(inv,start_x,canvas)
     if inv ~= nil then
-        iterateObjects(inv,{start_x + 4,start_y + 30,show_price},printInventoryItem)
-        i = #inv
+        love.graphics.setCanvas(canvas)
+        iterateObjects(inv,{10,LARGE_FONT:getHeight() + 10,false},printInventoryItem)
+        love.graphics.setCanvas()
     end
-    if love.keyboard.isScancodeDown("escape") then
-        DRAW_INV   = false
-        DRAW_TRADE = false
-    end
-    return i
 end
 
 --make a new random x,y for an object
@@ -87,34 +80,31 @@ local function makeXY(rand,solar_system,ships)
     return x,y
 end
 
-local function makeCanvas(inv,title)
-    local canvas = love.graphics.newCanvas(MAIN_FONT:getWidth(title .. "    "),WINDOW_HEIGHT)
+local function makeCanvas(title)
+    local canvas = love.graphics.newCanvas(LARGE_FONT:getWidth(title .. "    "),WINDOW_HEIGHT)
     love.graphics.setCanvas(canvas)
+    love.graphics.setFont(LARGE_FONT)
     love.graphics.print(title,1,1)
-    if inv ~= nil then
-        for i=1,#inv,1 do
-            love.graphics.print(inv[i].name,4,10 + 20 * i)
-        end
-    end
+    love.graphics.setNewFont()
     love.graphics.setCanvas()
     return canvas
 end
 
 --make new OBJECT object
 function OBJECT:new(icon,name,rand,add,max,solar_system,ships)
-    self             = setmetatable({},OBJECT)
-    self.x,self.y    = makeXY(rand,solar_system,ships)
-    self.name        = name 
-    self.inv         = makeInv(rand,add,max)
-    self.icon        = icon 
+    local o       = setmetatable({},OBJECT)
+    o.x,o.y    = makeXY(rand,solar_system,ships)
+    o.name        = name 
+    o.inv         = makeInv(rand,add,max)
+    o.icon        = icon 
     --set a random angle for the object to be at.
-    self.angle       =  -3.14159 + rand() * 6.28318 
-    self.x_off       = self.icon:getWidth() / 2
-    self.y_off       = self.icon:getHeight() / 2
-    self.buy         = makeBuyable(rand,add,max)
-    self.buy_canvas  = makeCanvas(self.buy,self.name .. " is buying:")
-    self.sell_canvas = makeCanvas(self.buy,self.name .. " is selling:")
-    return self
+    o.angle       =  -3.14159 + rand() * 6.28318 
+    o.x_off       = o.icon:getWidth() / 2
+    o.y_off       = o.icon:getHeight() / 2
+    o.buy         = makeBuyable(rand,add,max)
+    o.buy_canvas  = makeCanvas(o.name .. " is buying:")
+    o.sell_canvas = makeCanvas(o.name .. " is selling:")
+    return o
 end
 
 --prints current object to screen
@@ -127,7 +117,15 @@ end
 function printObjects(objs,canvas)
     love.graphics.setCanvas(canvas)
     for i=1,#objs,1 do
-        objs[i]:print(player)
+        objs[i]:print()
     end
+    love.graphics.setCanvas()
 end
+
+--draws teh buy/sell canvas of an object
+function drawObjectCanvas(inv,start_x,canvas)
+    drawInventory(inv,start_x,canvas)
+    love.graphics.draw(canvas,start_x,1)
+end
+
 
