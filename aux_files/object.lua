@@ -4,7 +4,8 @@ local Items  = require("aux_files.items")
 
 OBJECT = {
             name = nil, x = nil, y = nil, inv = nil, icon = nil, x_off = nil, y_off = nil,
-            angle = nil,discovered = false, buy = nil,sell_canvas = nil, buy_canvas = nil
+            angle = nil,discovered = false, buy = nil,sell_canvas = nil, buy_canvas = nil,
+            buy_title = nil,sell_title = nil
         }
 OBJECT.__index = OBJECT
 
@@ -38,10 +39,11 @@ function checkIfOverlap(object,params)
     return false
 end
 
+
 local function printInventoryItem(inv_item,params)
     love.graphics.print(inv_item.name,params[1],params[2])
     if params[3] == true then
-        love.graphics.print(inv_item.price,params[1] + (inv_item.name:len()) + 30 ,params[2])
+        love.graphics.print(inv_item.price,params[1] + (MAIN_FONT:getWidth(inv_item.name)) + 10 ,params[2])
     end
     params[2] = params[2] + 20
     return false
@@ -60,11 +62,12 @@ function iterateObjects(objects,params,func)
 end
 
 --prints inventory of the object to canvas
-local function drawInventory(inv,canvas)
+local function drawInventory(inv,price,title)
     if inv ~= nil then
-        love.graphics.setCanvas(canvas)
-        iterateObjects(inv,{10,LARGE_FONT:getHeight() + 10,false},printInventoryItem)
-        love.graphics.setCanvas()
+        love.graphics.setFont(LARGE_FONT)
+        love.graphics.print(title,1,1)
+        love.graphics.setFont(MAIN_FONT)
+        iterateObjects(inv,{10,LARGE_FONT:getHeight() + 10,price},printInventoryItem)
     end
 end
 
@@ -82,28 +85,25 @@ end
 
 local function makeCanvas(title)
     local canvas = love.graphics.newCanvas(LARGE_FONT:getWidth(title .. "    "),WINDOW_HEIGHT)
-    love.graphics.setCanvas(canvas)
-    love.graphics.setFont(LARGE_FONT)
-    love.graphics.print(title,1,1)
-    love.graphics.setNewFont()
-    love.graphics.setCanvas()
     return canvas
 end
 
 --make new OBJECT object
-function OBJECT:new(icon,name,rand,add,max,solar_system,ships)
+function OBJECT:new(icon,name,rand,add,min_sell,max_sell,min_buy,max_buy,solar_system,ships)
     local o       = setmetatable({},OBJECT)
     o.x,o.y       = makeXY(rand,solar_system,ships)
     o.name        = name 
-    o.inv         = makeInv(rand,add,max)
+    o.inv         = makeInv(rand,add,min_sell,max_sell)
     o.icon        = icon 
     --set a random angle for the object to be at.
     o.angle       =  -3.14159 + rand() * 6.28318 
     o.x_off       = o.icon:getWidth() / 2
     o.y_off       = o.icon:getHeight() / 2
-    o.buy         = makeBuyable(rand,add,max)
-    o.buy_canvas  = makeCanvas(o.name .. " is buying:")
-    o.sell_canvas = makeCanvas(o.name .. " is selling:")
+    o.buy         = makeBuyable(rand,add,min_buy,max_buy)
+    o.buy_title   = o.name .. " is buying:"
+    o.sell_title  = o.name .. " is selling:"
+    o.buy_canvas  = makeCanvas(o.buy_title)
+    o.sell_canvas = makeCanvas(o.sell_title)
     return o
 end
 
@@ -123,8 +123,11 @@ function printObjects(objs,canvas)
 end
 
 --draws teh buy/sell canvas of an object
-function drawObjectCanvas(inv,start_x,canvas)
-    drawInventory(inv,canvas)
+function drawObjectCanvas(inv,start_x,canvas,show_price,title)
+    love.graphics.setCanvas(canvas)
+    love.graphics.clear()
+    drawInventory(inv,show_price,title)
+    love.graphics.setCanvas()
     love.graphics.draw(canvas,start_x,1)
 end
 

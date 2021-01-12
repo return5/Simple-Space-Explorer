@@ -44,7 +44,7 @@ function SHIP:new(name,attk,hull,money,solar_system,rand,add)
     local name = name 
     local icon = makeShipIcon(rand)
     --create new OBJECT object, SHIP inherents from OBJECT
-    local o    = setmetatable(OBJECT:new(icon,name,rand,add,3,solar_system,ships),SHIP)
+    local o    = setmetatable(OBJECT:new(icon,name,rand,add,0,3,0,4,solar_system,ships),SHIP)
     o.attk     = attk
     o.hull     = hull
     o.items    = items
@@ -63,7 +63,7 @@ function makePlayerShip(solar_system)
     local hull   = rand(70,150)
     local money  = rand(200,600)
     local ship   = SHIP:new(name,attk,hull,money,solar_system,rand,table.insert)
-    --ship.inv     = ni
+    ship.sell_title = ship.name .. "'s inventory:"
     return ship
 end
 

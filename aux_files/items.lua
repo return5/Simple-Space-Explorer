@@ -12,12 +12,12 @@ local RARE_ITEMS = {
 
 --Generate new ITEM object
 function ITEM:new(name,func,price,quant)
-    local self = setmetatable({},ITEM)
-    self.name  = name
-    self.func  = func
-    self.price = price
-    self.quant = quant
-    return self
+    local o = setmetatable({},ITEM)
+    o.name  = name
+    o.func  = func
+    o.price = price
+    o.quant = quant
+    return o
 end
 
 --player can buy fuel for their ship
@@ -226,8 +226,8 @@ local function getRandItem(rand)
 end
 
 --MAke the inventory for an OBJECT object
-function makeInv(rand,add,max)
-    local n         = rand(0,max)
+function makeInv(rand,add,min,max)
+    local n         = rand(min,max)
     local inv       = {}
     local checkitem = checkForItem
     local upquant   = updateQuantity
@@ -244,18 +244,17 @@ function makeInv(rand,add,max)
     return inv
 end
 
-function makeBuyable(rand,add,max)
-    local n         = rand(0,max)
+function makeBuyable(rand,add,min,max)
+    local n         = rand(min,max)
     local buy       = {}
     local checkitem = checkForItem
-    local j         = -1
     for i=1,n,1 do
-        local name = {name = nil}
+        local item
         repeat
-            name.name = RARE_ITEMS[rand(1,#RARE_ITEMS)]
-            j = checkitem(name,buy)
+            item    = makeRareItem(rand)
+            local j = checkitem(item,buy)
         until(j == -1)
-        add(buy,name)
+        add(buy,item)
     end
     return buy
 end

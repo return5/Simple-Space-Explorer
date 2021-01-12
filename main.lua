@@ -2,7 +2,6 @@ local Planets = require("aux_files.planet")
 local Ships   = require("aux_files.ship")
 local Trade   = require("aux_files.trade")
 
-local DRAWFUNC
 local WINDOW_WIDTH  = 800
 local WINDOW_HEIGHT = 800
 local CANVASES      = {planets = nil, ships = nil}
@@ -52,7 +51,6 @@ local function movePlayerShip(dt)
         updatePlayerShipLocation(dt)
         useUpFuel()
         ENGINE_SOUND:play()
-        MOVE_PLAYER = true
     end
 end
 
@@ -64,16 +62,23 @@ local function printObjectsToCanvas()
     love.graphics.setCanvas()
 end
 
-function love.draw(dt)
-    DRAWFUNC()
-end
-
 function playerPressedT()
     TRADE_PARTNER = checkForTradePartner({SOLAR_SYSTEM,SHIPS})
     if TRADE_PARTNER ~= nil then
         DRAW_TRADE = true
     end
 end
+
+function love.draw(dt)
+    if DRAW_INV == true then
+        playerInventory()
+    elseif DRAW_TRADE == true then
+        tradeScreen()
+    elseif DRAW_SPACE == true then
+        openSpace()
+    end
+end
+
 
 function love.keypressed(_,scancode)
     if scancode == "t" then
@@ -87,15 +92,11 @@ function love.keypressed(_,scancode)
 end
 
 function love.update(dt)
-    if DRAW_INV == true then
-        DRAWFUNC = playerInventory
-    elseif DRAW_TRADE == true then
-        DRAWFUNC = tradeScreen
-    elseif DRAW_SPACE == true then
-        getDirection()
-        DRAWFUNC = openSpace
+    if DRAW_SPACE == true then
+        getDirection(dt)
         if love.keyboard.isScancodeDown('w') then
             movePlayerShip(dt)
+            MOVE_PLAYER = true
         else
             ENGINE_SOUND:stop()
             MOVE_PLAYER = false
@@ -112,6 +113,7 @@ function love.load()
     love.window.setMode(WINDOW_WIDTH,WINDOW_HEIGHT)
     love.keyboard.setKeyRepeat(true)
     LARGE_FONT    = love.graphics.newFont(20)
+    MAIN_FONT     = love.graphics.newFont()
     SOLAR_SYSTEM  = makeSolarSystem()              --list of all planets
     SHIPS         = makeComputerShips(SOLAR_SYSTEM)   --list of non player controlled ships
     PLAYER        = makePlayerShip(SOLAR_SYSTEM)   --player ship

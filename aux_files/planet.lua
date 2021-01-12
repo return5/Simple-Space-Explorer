@@ -30,11 +30,7 @@ end
 function PLANET:new(rand,add)
     local name  = getPlanetName(rand) 
     local icon  = getPlanetIcon(rand)
-    local o     = setmetatable(OBJECT:new(icon,name,rand,add,6,SOLAR_SYSTEM,nil),PLANET)
-    --make sure planet has tradebale items for player
-    while o.inv == nil or #o.inv == 0 do
-        o.inv = makeInv(rand,add,6) 
-    end
+    local o     = setmetatable(OBJECT:new(icon,name,rand,add,2,6,3,10,SOLAR_SYSTEM,nil),PLANET)
     --search planet for fuel in its inventory
     local i = checkForItem({name = "Fuel"},o.inv)
     --if planet has no fuel to sell then make some
