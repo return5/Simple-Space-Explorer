@@ -109,8 +109,8 @@ end
 
 --prints current object to screen
 function OBJECT:print()
-    love.graphics.print(self.name,self.x - self.x_off,self.y - self.y_off - 15) 
     love.graphics.draw(self.icon,self.x,self.y,self.angle,nil,nil,self.x_off,self.y_off)
+    love.graphics.print(self.name,self.x - self.x_off,self.y - self.y_off - 15) 
 end
 
 --iterate over a list of Objects and call its print function

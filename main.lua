@@ -15,8 +15,10 @@ local function openSpace()
     love.graphics.translate(-PLAYER.x + HALF_W, -PLAYER.y + HALF_H)
     love.graphics.draw(CANVASES.planets)
     love.graphics.draw(CANVASES.ships)
+    if MOVE_PLAYER == true then
+        love.graphics.draw(THRUSTER,PLAYER.x,PLAYER.y,PLAYER.angle,nil,nil,THRUSTER:getWidth() / 2,PLAYER.y_off)
+    end
     PLAYER:print(PLAYER)
-    love.graphics.draw(THRUSTER,PLAYER.x - PLAYER.x_off * 2,PLAYER.y + PLAYER.y_off * 2,PLAYER.angle,nil,nil,THRUSTER:getWidth() / 2,THRUSTER:getHeight() / 2) 
 end
 --
 --get the direction which the ship should face based on the location of the mouse
@@ -28,15 +30,15 @@ local function getDirection()
 end
 
 local function printPlayerThruster()
-   love.graphics.draw(THRUSTER,PLAYER.x,PLAYER.y,-PLAYER.angle,nil,nil,nil,nil) 
+    love.graphics.translate(-PLAYER.x + HALF_W, -PLAYER.y + HALF_H)
 end
 
 --when player ship is moving, update it's x and y'
 local function updatePlayerShipLocation(dt)
-    local cos    = math.cos(PLAYER.angle)
-    local sin    = math.sin(PLAYER.angle) 
-    PLAYER.x     = PLAYER.x + PLAYER.speed * cos * dt
-    PLAYER.y     = PLAYER.y + PLAYER.speed * sin * dt
+    local cos  = math.cos(PLAYER.angle)
+    local sin  = math.sin(PLAYER.angle) 
+    PLAYER.x   = PLAYER.x + PLAYER.speed * cos * dt
+    PLAYER.y   = PLAYER.y + PLAYER.speed * sin * dt
 end
 
 --as player flys around decrease the ammount of fuel
@@ -49,8 +51,8 @@ local function movePlayerShip(dt)
     if PLAYER.fuel > 0  then
         updatePlayerShipLocation(dt)
         useUpFuel()
-        --printPlayerThruster()
         ENGINE_SOUND:play()
+        MOVE_PLAYER = true
     end
 end
 
@@ -96,6 +98,7 @@ function love.update(dt)
             movePlayerShip(dt)
         else
             ENGINE_SOUND:stop()
+            MOVE_PLAYER = false
         end
     end
 end
@@ -118,7 +121,7 @@ function love.load()
     DRAW_SPACE    = true     --should open space screen be drawn
     DRAW_INV      = false    --should inventory screen be drawn
     TRADE_PARTNER = nil
-    PLAYER_MOVE   = false
+    MOVE_PLAYER   = false
     THRUSTER      = love.graphics.newImage("/img/effects/thrust.png")
 end
 
