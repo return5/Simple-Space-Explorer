@@ -56,14 +56,15 @@ end
 
 --make the player ship
 function makePlayerShip(solar_system)
-    local rand   = math.random
-    local name   = "return5"--getPlayerShipName() 
-    local attk   = rand(5,15)
-    local hull   = rand(70,150)
-    local money  = rand(300,800)
-    local ship   = SHIP:new(name,attk,hull,solar_system,rand,table.insert)
+    local rand      = math.random
+    local name      = "return5"--getPlayerShipName() 
+    local attk      = rand(5,15)
+    local hull      = rand(70,150)
+    local money     = rand(300,800)
+    local ship      = SHIP:new(name,attk,hull,solar_system,rand,table.insert)
     ship.sell_title = ship.name .. "'s inventory:"
     ship.money      = money
+    ship.inv        = makeAllRareItems(rand)
     return ship
 end
 

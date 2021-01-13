@@ -5,7 +5,7 @@ local Items  = require("aux_files.items")
 OBJECT = {
             name = nil, x = nil, y = nil, inv = nil, icon = nil, x_off = nil, y_off = nil,
             angle = nil,discovered = false, buy = nil,sell_canvas = nil, buy_canvas = nil,
-            buy_title = nil,sell_title = nil,money
+            buy_title = nil,sell_title = nil,money = nil, sell_order = nil, buy_order = nil
         }
 OBJECT.__index = OBJECT
 
@@ -46,6 +46,7 @@ local function printInventoryItem(inv_item,params)
         love.graphics.print(inv_item.price,params[1] + (MAIN_FONT:getWidth(inv_item.name)) + 10 ,params[2])
     end
     params[2] = params[2] + 20
+    params[4][#params[4] + 1] = inv_item.name
     return false
 end
 
@@ -61,13 +62,22 @@ function iterateObjects(objects,params,func)
     return -1
 end
 
+local function iterateInventory(inv,params,func)
+    if inv ~= nil then
+        for _,v in pairs(inv) do
+            func(v,params)
+        end
+    end
+    return -1
+end
+
 --prints inventory of the object to canvas
-local function drawInventory(inv,price,title)
+local function drawInventory(inv,price,title,order)
     if inv ~= nil then
         love.graphics.setFont(LARGE_FONT)
         love.graphics.print(title,1,1)
         love.graphics.setFont(MAIN_FONT)
-        iterateObjects(inv,{10,LARGE_FONT:getHeight() + 20,price},printInventoryItem)
+        iterateInventory(inv,{10,LARGE_FONT:getHeight() + 20,price,order},printInventoryItem)
     end
 end
 
@@ -93,18 +103,20 @@ function OBJECT:new(icon,name,rand,add,min_sell,max_sell,min_buy,max_buy,solar_s
     local o       = setmetatable({},OBJECT)
     o.x,o.y       = makeXY(rand,solar_system,ships)
     o.name        = name 
-    o.inv         = makeInv(rand,add,min_sell,max_sell)
+    o.inv         = makeInv(rand,add,min_sell,max_sell,getRandItem)
     o.icon        = icon 
     --set a random angle for the object to be at.
     o.angle       =  -3.14159 + rand() * 6.28318 
     o.x_off       = o.icon:getWidth() / 2
     o.y_off       = o.icon:getHeight() / 2
-    o.buy         = makeBuyable(rand,add,min_buy,max_buy)
+    o.buy         = makeInv(rand,add,min_buy,max_buy,makeRareItem)
     o.buy_title   = o.name .. " is buying:"
     o.sell_title  = o.name .. " is selling:"
     o.buy_canvas  = makeCanvas(o.buy_title)
     o.sell_canvas = makeCanvas(o.sell_title)
     o.money       = rand(200,2000)
+    o.sell_order  = {}
+    o.buy_order   = {}
     return o
 end
 
@@ -123,13 +135,22 @@ function printObjects(objs,canvas)
     love.graphics.setCanvas()
 end
 
---draws teh buy/sell canvas of an object
-function drawObjectCanvas(inv,start_x,canvas,show_price,title)
-    love.graphics.setCanvas(canvas)
+--draws the buy/sell canvas of an object
+function drawInvCanvas(obj,start_x,is_player,show_price)
+    love.graphics.setCanvas(obj.sell_canvas)
     love.graphics.clear()
-    drawInventory(inv,show_price,title)
+    obj.sell_order = {}
+    drawInventory(obj.inv,show_price,obj.sell_title,obj.sell_order)
+    love.graphics.print(obj.name .. "'s money is: " .. obj.money,5, LARGE_FONT:getHeight() + 10 + 20 * (#obj.sell_order + 1))
+    if is_player == false then
+        love.graphics.setCanvas(obj.buy_canvas)
+        love.graphics.clear()
+        obj.buy_order = {}
+        drawInventory(obj.buy,show_price,obj.buy_title,obj.buy_order)
+    end
     love.graphics.setCanvas()
-    love.graphics.draw(canvas,start_x,1)
+    love.graphics.draw(obj.sell_canvas,start_x,1)
+    love.graphics.draw(obj.buy_canvas,start_x + obj.sell_canvas:getWidth(),1)
 end
 
 

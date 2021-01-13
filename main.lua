@@ -11,6 +11,7 @@ local CANVASES      = {planets = nil, ships = nil}
 --draw open space with ships and planets.
 local function openSpace()
     love.graphics.print("player's fuel is: " .. PLAYER.fuel,1,1)
+    love.graphics.print("player money is: " .. PLAYER.money,1,MAIN_FONT:getHeight() + 10)
     love.graphics.translate(-PLAYER.x + HALF_W, -PLAYER.y + HALF_H)
     love.graphics.draw(CANVASES.planets)
     love.graphics.draw(CANVASES.ships)
@@ -51,6 +52,10 @@ local function movePlayerShip(dt)
         updatePlayerShipLocation(dt)
         useUpFuel()
         ENGINE_SOUND:play()
+        MOVE_PLAYER = true
+    else
+        MOVE_PLAYER = false
+        ENGINE_SOUND:stop()
     end
 end
 
@@ -66,18 +71,19 @@ function playerPressedT()
     TRADE_PARTNER = checkForTradePartner({SOLAR_SYSTEM,SHIPS})
     if TRADE_PARTNER ~= nil then
         DRAW_TRADE = true
+        DRAW_SPACE = false
     end
 end
 
 function love.draw(dt)
-    if DRAW_INV == true then
+    if DRAW_SELL == true then
+        sellScreen()
+    elseif DRAW_INV == true then
         playerInventory()
     elseif DRAW_TRADE == true then
         tradeScreen()
     elseif DRAW_SPACE == true then
         openSpace()
-    elseif DRAW_SELL == true then
-        sellScreen()
     end
 end
 
@@ -94,11 +100,14 @@ function love.keypressed(_,scancode)
         playerPressedT()
     elseif scancode == "i" then
         DRAW_INV = not DRAW_INV
+        DRAW_SPACE = not DRAW_SPACE
     elseif scancode == "escape" then
-        DRAW_INV   = false
-        DRAW_TRADE = false
-        DRAW_SELL  = false
-        DRAW_SPACE = true
+        if DRAW_SELL == false then
+            DRAW_INV   = false
+            DRAW_TRADE = false
+            DRAW_SPACE = true
+        end
+        DRAW_SELL = false
     end
 end
 
@@ -107,7 +116,6 @@ function love.update(dt)
         getDirection(dt)
         if love.keyboard.isScancodeDown('w') then
             movePlayerShip(dt)
-            MOVE_PLAYER = true
         else
             ENGINE_SOUND:stop()
             MOVE_PLAYER = false

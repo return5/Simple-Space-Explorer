@@ -8,31 +8,53 @@ function sellScreen()
     love.graphics.print("press escape to exit.",1,MAIN_FONT:getHeight() * 2 + 10)
 end
 
+local function removeItemAfterTrade(seller,item)
+    if item.quant <= 1 then
+        seller.inv[item.name] = nil
+    else
+        seller.inv[item.name].quant = seller.inv[item.name].quant - 1
+    end
+end
+
+local function addItemAfterTrade(buyer,item,price)
+    if buyer.inv[item.name] ~= nil then
+        buyer.inv[item.name].quant = buyer.inv[item.name].quant + 1
+    else
+        buyer.inv[item.name] = item
+        buyer.inv[item.name].price = price
+    end
+end
+
 
 --player or ship successfully sold an item
-local function successSellItem(buyer,seller,i)
-   local str    = string.format("%s bought %s for %d space dollars.",buyer.name,seller.inv[i].name,seller.inv[i].price)
-   buyer.money  = buyer.money - seller.inv[i].price
-   seller.money = seller.money + seller.inv[i].price
-   table.insert(buyer.inv,seller.inv[i])
-   table.remove(seller.inv,i)
-   return str
+local function successSellItem(buyer,seller,i,price)
+    local str    = string.format("%s bought %s for %d space dollars.",buyer.name,seller.inv[i].name,price)
+    buyer.money  = buyer.money - price
+    seller.money = seller.money + price
+    addItemAfterTrade(buyer,seller.inv[i],price)
+    removeItemAfterTrade(seller,seller.inv[i])
+    return str
 end
 
 --player or ship/planet sells an item
-local function sellItem(buyer,seller,i)
-    if buyer.money >= seller.inv[i].price then
-        return successSellItem(buyer,seller,i)
+local function sellItem(buyer,seller,name,price)
+    if buyer.money >= price then
+        return successSellItem(buyer,seller,name,price)
     end
-        return string.format("sorry, but %s cannot afford to buy %s",buyer.name,seller.inv[i].name)
+        return string.format("sorry, but %s cannot afford to buy %s",buyer.name,name)
 end
 
 --player sells item to a planet or ship from the 'buying' column
-local function buyItem(buyer,seller,i)
-    if iterateObjects(seller.inv,{name = buyer.buy[i].name},checkNAme) ~= -1 then
-        return sellItem(buyer,seller,i)
+local function playerSellItem(buyer,seller,name,check)
+    if buyer.buy[name] ~= nil and seller.inv[name] ~= nil then
+        local price = buyer.buy[name].price
+        return sellItem(buyer,seller,name,price)
     end
+    if seller.inv[name] == nil then
         return string.format("Sorry, but %s doesnt have %s.",seller.name,buyer.buy[i].name)
+    else
+        return string.format("sorry, but %s isn't buying %s.",buyer.name,name)
+    end
 end
 
 --check the y position of the mouse compared to what is on the screen
@@ -42,7 +64,7 @@ local function checkYLocationOfClick(inv,y)
         local i    = (y - base + MAIN_FONT:getHeight()) / 20 
         i = math.modf(i)
         if y > base and i <= #inv then
-            return i
+            return inv[i]
         end
     end
     return -1
@@ -54,15 +76,15 @@ local function checkXLocationOfClick(x,y)
     local sell_canvas   = TRADE_PARTNER.sell_canvas:getWidth() + player_canvas
             --player clicks on an item in their inventory
     if x > 0 and x <= player_canvas then
-        return checkYLocationOfClick(PLAYER.inv,y),"Player Sell"
+        return checkYLocationOfClick(PLAYER.sell_order,y),"Player Sell"
         
      --player clicks on an item in thrade partner's  inventory   
     elseif x > player_canvas and x <= sell_canvas and DRAW_TRADE == true then
-        return checkYLocationOfClick(TRADE_PARTNER.inv,y),"Partner Sell"
+        return checkYLocationOfClick(TRADE_PARTNER.sell_order,y),"Partner Sell"
 
     --player clicks on an item in buying column
     elseif x > sell_canvas and x <= TRADE_PARTNER.buy_canvas:getWidth() + sell_canvas and DRAW_TRADE == true then
-        return checkYLocationOfClick(TRADE_PARTNER.buy,y),"Partner Buy"
+        return checkYLocationOfClick(TRADE_PARTNER.buy_order,y),"Partner Buy"
     else
         return -1,nil
     end
@@ -72,31 +94,32 @@ end
 function tradeItem(i,verb)
     local str
     if verb == "Player Sell" then
-        str = sellItem(TRADE_PARTNER,PLAYER,i)
+        str = playerSellItem(TRADE_PARTNER,PLAYER,i,PLAYER.sell_order[i])
     elseif verb == "Partner Sell" then
-        str = sellItem(PLAYER,TRADE_PARTNER,i)
+        str = sellItem(PLAYER,TRADE_PARTNER,i,TRADE_PARTNER.inv[i].price)
     elseif verb == "Partner Buy" then
-        str = buyItem(TRADE_PARTNER,PLAYER,i)
+        str = playerSellItem(TRADE_PARTNER,PLAYER,i,TRADE_PARTNER.buy_order[i])
     end
     return str
 end
 
 --player uses item to upgrade ship
 function upgradeShip(i,_)
+    local str = "sorry, but you can't upgrade with that item"
+    io.write("i is: ",i,"\n")
     if PLAYER.inv[i].func ~= nil then
-        local str = PLAYER.inv[i].func()
-        table.remove(PLAYER.inv,i)
-        return str
+        str,succ = PLAYER.inv[i].func(PLAYER.inv[i].name)
+        if succ == true then
+            table.remove(PLAYER.inv,i)
+        end
     end
+    return str
 end
 
 --find the correct item borresponding to the name displayed on screen based on mouse x,y
 function getInvItemFromClick(x,y,func)
     local i,verb = checkXLocationOfClick(x,y)
         if i ~= -1 then
-        DRAW_TRADE = false
-        DRAW_SPACE = false
-        DRAW_INV   = false
         DRAW_SELL  = true
         return func(i,verb)
     end
@@ -117,14 +140,14 @@ end
 
 
 function playerInventory()
-    drawObjectCanvas(PLAYER.inv,1,PLAYER.sell_canvas,false,PLAYER.sell_title)
-    love.graphics.print("press esc to exit.", 5,LARGE_FONT:getHeight() + 10 + (20 * (#PLAYER.inv + 1)))
+    drawInvCanvas(PLAYER,1,true,false)
+    local print_y = LARGE_FONT:getHeight() + 10 + (20 * (#PLAYER.sell_order + 2))
+    love.graphics.print("press escape to exit", 5,print_y)
 end
 
 function tradeScreen()
-    local p_width    = PLAYER.sell_canvas:getWidth() + 20
+    local p_width  = PLAYER.sell_canvas:getWidth() + 20
     playerInventory()
-    drawObjectCanvas(TRADE_PARTNER.inv,p_width,TRADE_PARTNER.sell_canvas,true,TRADE_PARTNER.sell_title)
-    drawObjectCanvas(TRADE_PARTNER.buy,p_width + TRADE_PARTNER.sell_canvas:getWidth() + 20,TRADE_PARTNER.buy_canvas,true,TRADE_PARTNER.buy_title)
+    drawInvCanvas(TRADE_PARTNER,p_width,false,true)
 end
 
