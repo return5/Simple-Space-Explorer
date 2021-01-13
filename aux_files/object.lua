@@ -20,6 +20,16 @@ function checkIfPlayerIsTouching(obj,player)
     return false
 end
 
+--make sure obj's x,y arnt too close to edge of map
+local function checkDist(x,y)
+    if x > 25 and x < WIDTH - 25 then
+        if y > 25 and y < HEIGHT - 25 then
+            return true
+        end
+    end
+    return false
+end
+
 --checks to see if current name matches that of obj
 function checkName(obj,params)
     if params.name == obj.name then
@@ -89,7 +99,7 @@ local function makeXY(rand,solar_system,ships)
         x = rand(1,WIDTH)
         y = rand(1,HEIGHT)
         local params = {x = x, y = y}
-    until(iterateObjects(solar_system,params,check) == -1 and iterateObjects(ships,params,check) == -1)
+    until(iterateObjects(solar_system,params,check) == -1 and iterateObjects(ships,params,check) == -1 and checkDist(x,y) == true)
     return x,y
 end
 
