@@ -5,7 +5,7 @@ local Items  = require("aux_files.items")
 OBJECT = {
             name = nil, x = nil, y = nil, inv = nil, icon = nil, x_off = nil, y_off = nil,
             angle = nil,discovered = false, buy = nil,sell_canvas = nil, buy_canvas = nil,
-            buy_title = nil,sell_title = nil
+            buy_title = nil,sell_title = nil,money
         }
 OBJECT.__index = OBJECT
 
@@ -67,7 +67,7 @@ local function drawInventory(inv,price,title)
         love.graphics.setFont(LARGE_FONT)
         love.graphics.print(title,1,1)
         love.graphics.setFont(MAIN_FONT)
-        iterateObjects(inv,{10,LARGE_FONT:getHeight() + 10,price},printInventoryItem)
+        iterateObjects(inv,{10,LARGE_FONT:getHeight() + 20,price},printInventoryItem)
     end
 end
 
@@ -104,6 +104,7 @@ function OBJECT:new(icon,name,rand,add,min_sell,max_sell,min_buy,max_buy,solar_s
     o.sell_title  = o.name .. " is selling:"
     o.buy_canvas  = makeCanvas(o.buy_title)
     o.sell_canvas = makeCanvas(o.sell_title)
+    o.money       = rand(200,2000)
     return o
 end
 

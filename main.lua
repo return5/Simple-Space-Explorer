@@ -76,9 +76,18 @@ function love.draw(dt)
         tradeScreen()
     elseif DRAW_SPACE == true then
         openSpace()
+    elseif DRAW_SELL == true then
+        sellScreen()
     end
 end
 
+function love.mousepressed(x,y,button,_,_)
+    if button == 1 and DRAW_TRADE == true then
+        BOUGHT_STR = getInvItemFromClick(x,y,tradeItem)
+    elseif button == 1 and DRAW_INV == true then
+        BOUGHT_STR = getInvItemFromClick(x,y,upgradeShip)
+    end
+end
 
 function love.keypressed(_,scancode)
     if scancode == "t" then
@@ -88,6 +97,8 @@ function love.keypressed(_,scancode)
     elseif scancode == "escape" then
         DRAW_INV   = false
         DRAW_TRADE = false
+        DRAW_SELL  = false
+        DRAW_SPACE = true
     end
 end
 
@@ -122,7 +133,9 @@ function love.load()
     DRAW_TRADE    = false    -- should trade screen be drawn
     DRAW_SPACE    = true     --should open space screen be drawn
     DRAW_INV      = false    --should inventory screen be drawn
-    TRADE_PARTNER = nil
+    DRAW_SELL     = false   --should screen showing sold/bought be displayed
+    BOUGHT_STR    = nil
+    TRADE_PARTNER = PLAYER
     MOVE_PLAYER   = false
     THRUSTER      = love.graphics.newImage("/img/effects/thrust.png")
 end

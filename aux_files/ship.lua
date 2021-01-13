@@ -40,7 +40,7 @@ local function getPlayerShipName()
 end
 
 --create new SHIP object
-function SHIP:new(name,attk,hull,money,solar_system,rand,add)
+function SHIP:new(name,attk,hull,solar_system,rand,add)
     local name = name 
     local icon = makeShipIcon(rand)
     --create new OBJECT object, SHIP inherents from OBJECT
@@ -48,7 +48,6 @@ function SHIP:new(name,attk,hull,money,solar_system,rand,add)
     o.attk     = attk
     o.hull     = hull
     o.items    = items
-    o.money    = money
     o.speed    = rand(70,110)
     o.fuel     = rand(500,1500)
     o.hostile  = rand(0,10) < 6 and false or true
@@ -61,9 +60,10 @@ function makePlayerShip(solar_system)
     local name   = "return5"--getPlayerShipName() 
     local attk   = rand(5,15)
     local hull   = rand(70,150)
-    local money  = rand(200,600)
-    local ship   = SHIP:new(name,attk,hull,money,solar_system,rand,table.insert)
+    local money  = rand(300,800)
+    local ship   = SHIP:new(name,attk,hull,solar_system,rand,table.insert)
     ship.sell_title = ship.name .. "'s inventory:"
+    ship.money      = money
     return ship
 end
 
@@ -76,8 +76,7 @@ function makeComputerShips(solar_system)
         local attk   = rand(2,15)
         local hull   = rand(45,200)
         local name   = makeShipName(rand)
-        local money  = rand(600,1200)
-        local ship   = SHIP:new(name,attk,hull,money,solar_system,rand,add)
+        local ship   = SHIP:new(name,attk,hull,solar_system,rand,add)
         add(SHIPS,ship)
     end
     return SHIPS
