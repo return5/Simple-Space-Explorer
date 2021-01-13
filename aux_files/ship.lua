@@ -2,7 +2,7 @@
 
 local Object = require("aux_files.object")
 
-SHIP = { speed = nil, attk = nil, def = nil,hostile = nil,fuel = nil}
+SHIP = { speed = nil, attk = nil, hull = nil,hostile = nil,hull_level = nil, attk_level = nil, engine_level = nil}
 SHIP.__index = SHIP
 setmetatable(SHIP,OBJECT)
 
@@ -32,39 +32,36 @@ local function makeShipIcon(rand)
     return love.graphics.newImage(name)
 end
 
---player inputs their ship name
-local function getPlayerShipName()
-    love.graphics.print("Please enter ship name:",WIDTH / 2, HEIGHT / 2)
-    local name = io.input()
-    return name
-end
 
 --create new SHIP object
 function SHIP:new(name,attk,hull,solar_system,rand,add)
-    local name = name 
-    local icon = makeShipIcon(rand)
+    local name     = name 
+    local icon     = makeShipIcon(rand)
     --create new OBJECT object, SHIP inherents from OBJECT
-    local o    = setmetatable(OBJECT:new(icon,name,rand,add,0,3,0,4,solar_system,ships),SHIP)
-    o.attk     = attk
-    o.hull     = hull
-    o.items    = items
-    o.speed    = rand(70,110)
-    o.fuel     = rand(500,1500)
-    o.hostile  = rand(0,10) < 6 and false or true
+    local o        = setmetatable(OBJECT:new(icon,name,rand,add,0,3,0,4,solar_system,ships),SHIP)
+    o.attk         = attk
+    o.hull         = hull
+    o.items        = items
+    o.hull_level   = 0
+    o.attk_level   = 0
+    o.engine_level = 0
+    o.speed        = rand(70,110)
+    o.hostile      = rand(0,10) < 6 and false or true
     return o
 end
 
 --make the player ship
 function makePlayerShip(solar_system)
     local rand      = math.random
-    local name      = "return5"--getPlayerShipName() 
+    local name      = PLAYER_NAME 
     local attk      = rand(5,15)
     local hull      = rand(70,150)
     local money     = rand(300,800)
     local ship      = SHIP:new(name,attk,hull,solar_system,rand,table.insert)
     ship.sell_title = ship.name .. "'s inventory:"
     ship.money      = money
-    ship.inv        = makeAllRareItems(rand)
+    ship.inv        = {}
+    addItem(ship.inv,makeFuel(rand,300,1300))
     return ship
 end
 

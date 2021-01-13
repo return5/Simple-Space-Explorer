@@ -8,31 +8,30 @@ function sellScreen()
     love.graphics.print("press escape to exit.",1,MAIN_FONT:getHeight() * 2 + 10)
 end
 
-local function removeItemAfterTrade(seller,item)
-    if item.quant <= 1 then
-        seller.inv[item.name] = nil
+local function buyFuel(inv,price)
+    local quant
+    if inv["Fuel"].quant < 10 then
+        quant = inv["Fuel"].quant
+        price = price / (10 - quant)
     else
-        seller.inv[item.name].quant = seller.inv[item.name].quant - 1
+        quant = 10
     end
+    return string.format("%d Fuel",quant),price,quant
 end
-
-local function addItemAfterTrade(buyer,item,price)
-    if buyer.inv[item.name] ~= nil then
-        buyer.inv[item.name].quant = buyer.inv[item.name].quant + 1
-    else
-        buyer.inv[item.name] = item
-        buyer.inv[item.name].price = price
-    end
-end
-
 
 --player or ship successfully sold an item
 local function successSellItem(buyer,seller,i,price)
-    local str    = string.format("%s bought %s for %d space dollars.",buyer.name,seller.inv[i].name,price)
+    local name  = seller.inv[i].name
+    local quant = 1
+    if i == "Fuel" then
+        name,price,quant = buyFuel(seller.inv,price) 
+    end 
+    local str    = string.format("%s bought %s for %d space dollars.",buyer.name,name,price)
     buyer.money  = buyer.money - price
     seller.money = seller.money + price
-    addItemAfterTrade(buyer,seller.inv[i],price)
-    removeItemAfterTrade(seller,seller.inv[i])
+    addItem(buyer.inv,seller.inv[i],quant)
+    buyer.inv[i].price = price
+    removeItem(seller.inv,seller.inv[i],quant)
     return str
 end
 
@@ -51,7 +50,7 @@ local function playerSellItem(buyer,seller,name,check)
         return sellItem(buyer,seller,name,price)
     end
     if seller.inv[name] == nil then
-        return string.format("Sorry, but %s doesnt have %s.",seller.name,buyer.buy[i].name)
+        return string.format("Sorry, but %s doesnt have %s.",seller.name,name)
     else
         return string.format("sorry, but %s isn't buying %s.",buyer.name,name)
     end
@@ -106,11 +105,10 @@ end
 --player uses item to upgrade ship
 function upgradeShip(i,_)
     local str = "sorry, but you can't upgrade with that item"
-    io.write("i is: ",i,"\n")
     if PLAYER.inv[i].func ~= nil then
         str,succ = PLAYER.inv[i].func(PLAYER.inv[i].name)
         if succ == true then
-            table.remove(PLAYER.inv,i)
+            removeItem(PLAYER.inv,PLAYER.inv[i],1)
         end
     end
     return str

@@ -10,7 +10,7 @@ local CANVASES      = {planets = nil, ships = nil}
 
 --draw open space with ships and planets.
 local function openSpace()
-    love.graphics.print("player's fuel is: " .. PLAYER.fuel,1,1)
+    love.graphics.print("player's fuel is: " .. PLAYER.inv["Fuel"].quant,1,1)
     love.graphics.print("player money is: " .. PLAYER.money,1,MAIN_FONT:getHeight() + 10)
     love.graphics.translate(-PLAYER.x + HALF_W, -PLAYER.y + HALF_H)
     love.graphics.draw(CANVASES.planets)
@@ -43,12 +43,12 @@ end
 
 --as player flys around decrease the ammount of fuel
 local function useUpFuel()
-    PLAYER.fuel = PLAYER.fuel - 1
+    PLAYER.inv["Fuel"].quant = PLAYER.inv["Fuel"].quant - 1
 end
 
 --move the Player's ship forward
 local function movePlayerShip(dt)
-    if PLAYER.fuel > 0  then
+    if PLAYER.inv["Fuel"].quant > 0  then
         updatePlayerShipLocation(dt)
         useUpFuel()
         ENGINE_SOUND:play()
@@ -75,6 +75,12 @@ function playerPressedT()
     end
 end
 
+local function getPlayerName()
+    local title = "please enter name: "
+    love.graphics.print(title,1,1)
+    love.graphics.print(PLAYER_NAME,MAIN_FONT:getWidth(title) + 5,1)
+end
+
 function love.draw(dt)
     if DRAW_SELL == true then
         sellScreen()
@@ -84,6 +90,8 @@ function love.draw(dt)
         tradeScreen()
     elseif DRAW_SPACE == true then
         openSpace()
+    elseif GET_P_NAME == true then
+        getPlayerName()
     end
 end
 
@@ -95,8 +103,17 @@ function love.mousepressed(x,y,button,_,_)
     end
 end
 
+function love.textinput(t)
+    if GET_P_NAME == true then
+        PLAYER_NAME = PLAYER_NAME .. t
+    end
+end
+
 function love.keypressed(_,scancode)
-    if scancode == "t" then
+    if GET_P_NAME == true and scancode == "return" then
+        GET_P_NAME = false
+        DRAW_SPACE = true
+    elseif scancode == "t" then
         playerPressedT()
     elseif scancode == "i" then
         DRAW_INV = not DRAW_INV
@@ -133,18 +150,20 @@ function love.load()
     love.keyboard.setKeyRepeat(true)
     LARGE_FONT    = love.graphics.newFont(20)
     MAIN_FONT     = love.graphics.newFont()
+    GET_P_NAME    = true
+    PLAYER_NAME   = ""
+    MOVE_PLAYER   = false
+    DRAW_TRADE    = false    -- should trade screen be drawn
+    DRAW_SPACE    = false     --should open space screen be drawn
+    DRAW_INV      = false    --should inventory screen be drawn
+    DRAW_SELL     = false   --should screen showing sold/bought be displayed
+    BOUGHT_STR    = nil
     SOLAR_SYSTEM  = makeSolarSystem()              --list of all planets
     SHIPS         = makeComputerShips(SOLAR_SYSTEM)   --list of non player controlled ships
     PLAYER        = makePlayerShip(SOLAR_SYSTEM)   --player ship
     printObjectsToCanvas()
     ENGINE_SOUND  = love.audio.newSource("/sounds/Engine.flac","static")
-    DRAW_TRADE    = false    -- should trade screen be drawn
-    DRAW_SPACE    = true     --should open space screen be drawn
-    DRAW_INV      = false    --should inventory screen be drawn
-    DRAW_SELL     = false   --should screen showing sold/bought be displayed
-    BOUGHT_STR    = nil
     TRADE_PARTNER = PLAYER
-    MOVE_PLAYER   = false
     THRUSTER      = love.graphics.newImage("/img/effects/thrust.png")
 end
 

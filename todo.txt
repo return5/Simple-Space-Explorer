@@ -5,11 +5,7 @@
     --add damage
     --add game over
 --add border around edge of map
-    --mke sure ships and planets dont have their x,y at border
 --add minimap
---add upgrading to game
-    --upgrade screen
-    --player increases hull,speed,weapons using parts bought
 --add score
 --ad u.i.
     --show score
@@ -17,7 +13,7 @@
     --show fuel
 --make screenshots
 --make README
-    --show screen shows
+    --show screen shots
     --tell about game
     --give credit to graphics/audio sources
     --tell dependencies
