@@ -8,11 +8,23 @@ local CANVASES      = {planets = nil, ships = nil,border = nil}
 
 
 
---draw open space with ships and planets.
-local function openSpace()
+--print remaining time to main screen
+local function printTime()
+    local time = string.format("Remaining time: %.1f",TOTAL_TIME - (love.timer.getTime() - START_TIME))
+    love.graphics.print(time,1,(MAIN_FONT:getHeight() * 3) + 10)
+end
+
+--print player info on main screen
+local function printUI()
     love.graphics.print("player's fuel is: " .. PLAYER.inv["Fuel"].quant,1,1)
     love.graphics.print("player money is: " .. PLAYER.money,1,MAIN_FONT:getHeight() + 10)
     love.graphics.print("Player score is: " .. PLAYER_SCORE,1,(MAIN_FONT:getHeight() * 2) + 10)
+    printTime()
+end
+
+--draw open space with ships and planets.
+local function openSpace()
+    printUI()
     love.graphics.translate(-PLAYER.x + HALF_W, -PLAYER.y + HALF_H)
     for _,canvas in pairs(CANVASES) do
         love.graphics.draw(canvas)
@@ -188,5 +200,7 @@ function love.load()
     TRADE_PARTNER = PLAYER
     THRUSTER      = love.graphics.newImage("/img/effects/thrust.png")
     PLAYER_SCORE  = 0
+    TOTAL_TIME    = 180
+    START_TIME    = love.timer.getTime()
 end
 
