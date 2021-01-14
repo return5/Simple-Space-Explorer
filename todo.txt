@@ -1,8 +1,0 @@
---add combat to game
-    --add ai controls
-    --add sound
-    --add lasers
-    --add damage
-    --add game over
---add minimap
---add license
