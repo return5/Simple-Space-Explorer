@@ -39,7 +39,7 @@ end
 
 --draw open space with ships and planets.
 local function openSpace()
-    printUI()
+    love.graphics.push()
     love.graphics.translate(-PLAYER.x + HALF_W, -PLAYER.y + HALF_H)
     for _,canvas in pairs(CANVASES) do
         love.graphics.draw(canvas)
@@ -48,6 +48,8 @@ local function openSpace()
         love.graphics.draw(THRUSTER,PLAYER.x,PLAYER.y,PLAYER.angle,nil,nil,THRUSTER:getWidth() / 2,PLAYER.y_off)
     end
     PLAYER:print(PLAYER)
+    love.graphics.pop()
+    printUI()
 end
 --
 --get the direction which the ship should face based on the location of the mouse
@@ -266,7 +268,7 @@ function love.load()
     TRADE_PARTNER = PLAYER    --planet or ship plaayer is trading with. init to self to not be nil
     THRUSTER      = love.graphics.newImage("/img/effects/thrust.png")
     ENGINE_SOUND  = love.audio.newSource("/sounds/Engine.flac","static")
-    PLAYER_SCORE  = 250
+    PLAYER_SCORE  = 0
     TOTAL_TIME    = 360    --total time to play game until game_over
     TIME_LEFT     = TOTAL_TIME --time left til game over
 end
