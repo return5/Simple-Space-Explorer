@@ -4,7 +4,7 @@ local Items  = require("aux_files.items")
 
 OBJECT = {
             name = nil, x = nil, y = nil, inv = nil, icon = nil, x_off = nil, y_off = nil,
-            angle = nil,discovered = false, buy = nil,sell_canvas = nil, buy_canvas = nil,
+            angle = nil,discovered = nil, buy = nil,sell_canvas = nil, buy_canvas = nil,
             buy_title = nil,sell_title = nil,money = nil, sell_order = nil, buy_order = nil
         }
 OBJECT.__index = OBJECT
@@ -22,12 +22,13 @@ end
 
 --make sure obj's x,y arnt too close to edge of map
 local function checkDist(x,y)
-    if x > 25 and x < WIDTH - 25 then
-        if y > 25 and y < HEIGHT - 25 then
-            return true
-        end
+    if x < 35 or x > WIDTH - 35 then
+        return false
     end
-    return false
+    if y < 35 or y > HEIGHT - 35 then
+        return false
+    end
+    return true
 end
 
 --checks to see if current name matches that of obj
@@ -109,12 +110,13 @@ local function makeCanvas(title)
 end
 
 --make new OBJECT object
-function OBJECT:new(icon,name,rand,add,min_sell,max_sell,min_buy,max_buy,solar_system,ships)
+function OBJECT:new(icon,name,rand,add,min_item,max_item,min_buy,max_buy)
     local o       = setmetatable({},OBJECT)
-    o.x,o.y       = makeXY(rand,solar_system,ships)
+    o.x,o.y       = makeXY(rand,SOLAR_SYSTEM,SHIPS)
     o.name        = name 
-    o.inv         = makeInv(rand,add,min_sell,max_sell,getRandItem)
     o.icon        = icon 
+    o.discovered  = false
+
     --set a random angle for the object to be at.
     o.angle       =  -3.14159 + rand() * 6.28318 
     o.x_off       = o.icon:getWidth() / 2
@@ -125,6 +127,7 @@ function OBJECT:new(icon,name,rand,add,min_sell,max_sell,min_buy,max_buy,solar_s
     o.buy_canvas  = makeCanvas(o.buy_title)
     o.sell_canvas = makeCanvas(o.sell_title)
     o.money       = rand(200,2000)
+    o.inv         = makeInv(rand,add,min_item,max_item,getRandItem)
     o.sell_order  = {}
     o.buy_order   = {}
     return o

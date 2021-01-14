@@ -30,12 +30,8 @@ end
 function PLANET:new(rand,add)
     local name  = getPlanetName(rand) 
     local icon  = getPlanetIcon(rand)
-    local o     = setmetatable(OBJECT:new(icon,name,rand,add,2,6,3,10,SOLAR_SYSTEM,nil),PLANET)
-    
-    --iif planet has no fuel to sell then make some
-    if o.inv["Fuel"] == nil then
-        o.inv["Fuel"] = makeFuel(rand)
-    end
+    local o     = setmetatable(OBJECT:new(icon,name,rand,add,2,8,3,10),PLANET)
+    addItem(o.inv,makeFuel(rand,600,2300))
     return o
 end
 

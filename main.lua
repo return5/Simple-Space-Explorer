@@ -4,7 +4,7 @@ local Trade   = require("aux_files.trade")
 
 local WINDOW_WIDTH  = 800
 local WINDOW_HEIGHT = 800
-local CANVASES      = {planets = nil, ships = nil}
+local CANVASES      = {planets = nil, ships = nil,border = nil}
 
 
 
@@ -12,9 +12,11 @@ local CANVASES      = {planets = nil, ships = nil}
 local function openSpace()
     love.graphics.print("player's fuel is: " .. PLAYER.inv["Fuel"].quant,1,1)
     love.graphics.print("player money is: " .. PLAYER.money,1,MAIN_FONT:getHeight() + 10)
+    love.graphics.print("Player score is: " .. PLAYER_SCORE,1,(MAIN_FONT:getHeight() * 2) + 10)
     love.graphics.translate(-PLAYER.x + HALF_W, -PLAYER.y + HALF_H)
-    love.graphics.draw(CANVASES.planets)
-    love.graphics.draw(CANVASES.ships)
+    for _,canvas in pairs(CANVASES) do
+        love.graphics.draw(canvas)
+    end
     if MOVE_PLAYER == true then
         love.graphics.draw(THRUSTER,PLAYER.x,PLAYER.y,PLAYER.angle,nil,nil,THRUSTER:getWidth() / 2,PLAYER.y_off)
     end
@@ -35,10 +37,14 @@ end
 
 --when player ship is moving, update it's x and y'
 local function updatePlayerShipLocation(dt)
-    local cos  = math.cos(PLAYER.angle)
-    local sin  = math.sin(PLAYER.angle) 
-    PLAYER.x   = PLAYER.x + PLAYER.speed * cos * dt
-    PLAYER.y   = PLAYER.y + PLAYER.speed * sin * dt
+    local cos   = math.cos(PLAYER.angle)
+    local sin   = math.sin(PLAYER.angle) 
+    local new_x = PLAYER.x + PLAYER.speed * cos * dt
+    local new_y = PLAYER.y + PLAYER.speed * sin * dt
+    if (new_x > 10 and new_x < WIDTH - 10) and (new_y > 10 and new_y < HEIGHT - 10) then
+        PLAYER.x = new_x
+        PLAYER.y = new_y
+    end
 end
 
 --as player flys around decrease the ammount of fuel
@@ -59,11 +65,23 @@ local function movePlayerShip(dt)
     end
 end
 
+local function printBorderToCanvas(canvas)
+    love.graphics.setCanvas(canvas)
+    love.graphics.setColor(1,1,1)
+    love.graphics.setLineWidth(10)
+    love.graphics.line(1,1,WIDTH,1)
+    love.graphics.line(1,HEIGHT,WIDTH,HEIGHT)
+    love.graphics.line(1,1,1,HEIGHT)
+    love.graphics.line(WIDTH,1,WIDTH,HEIGHT)
+end
+
 local function printObjectsToCanvas()
-    CANVASES.planets = love.graphics.newCanvas(HEIGHT,WIDTH)
-    CANVASES.ships   = love.graphics.newCanvas(HEIGHT,WIDTH)
+    CANVASES.planets = love.graphics.newCanvas(WIDTH,HEIGHT)
+    CANVASES.ships   = love.graphics.newCanvas(WIDTH,HEIGHT)
+    CANVASES.border  = love.graphics.newCanvas(WIDTH,HEIGHT)
     printObjects(SOLAR_SYSTEM,CANVASES.planets)
     printObjects(SHIPS,CANVASES.ships)
+    printBorderToCanvas(CANVASES.border)
     love.graphics.setCanvas()
 end
 
@@ -72,6 +90,10 @@ function playerPressedT()
     if TRADE_PARTNER ~= nil then
         DRAW_TRADE = true
         DRAW_SPACE = false
+        if TRADE_PARTNER.discovered == false then
+            TRADE_PARTNER.discovered = true
+            PLAYER_SCORE             = PLAYER_SCORE + 20
+        end
     end
 end
 
@@ -165,5 +187,6 @@ function love.load()
     ENGINE_SOUND  = love.audio.newSource("/sounds/Engine.flac","static")
     TRADE_PARTNER = PLAYER
     THRUSTER      = love.graphics.newImage("/img/effects/thrust.png")
+    PLAYER_SCORE  = 0
 end
 

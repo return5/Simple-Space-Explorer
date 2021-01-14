@@ -1,44 +1,44 @@
 --File contains functions for generating and using ITEM objects
 
-ITEM = {name = nil, func = nil, price = nil, quant = nil}
+ITEM = {name = nil, func = nil, price = nil, quant = nil, item_type = nil}
 ITEM.__index = ITEM
 
 --list of names for rare items
 local RARE_ITEMS = {
                     "Mystery Box","E.T. Cartridge Game","Sonichu Medallion","Asperchu Medallion","Spock's Brain",
-                    "Kurlan Naiskos","D.B Cooper's Frozen Head","Apple Newton","Bill Of Rights","Blood Source Code",
-                    "Apolo 11 flag","Luke's Blue LightSaber"
+                    "Kurlan Naiskos","D.B Cooper's Frozen Head","Apple Newton","Bill Of Rights","Blood's Source Code",
+                    "Apolo 11 flag","Luke's Blue LightSaber", "Duke Nukem's blessing","Hand sanitizer","Toilet Paper",
+                    "Hypoallergenic Peanuts","Romulan Ale","Purple Space Bazooka","Action Comics #1","Nugget of Kryptonite",
+                    "Space Twinkie","Nukie VHS"
                 }
 
 --Generate new ITEM object
-function ITEM:new(name,func,price,quant)
-    local o = setmetatable({},ITEM)
-    o.name  = name
-    o.func  = func
-    o.price = price
-    o.quant = quant
+function ITEM:new(name,func,price,quant,type)
+    local o     = setmetatable({},ITEM)
+    o.name      = name
+    o.func      = func
+    o.price     = price
+    o.quant     = quant
+    o.item_type = item_type
     return o
-end
-
---player can buy fuel for their ship
-function getFuel()
-    --to do
 end
 
 --Make a Rare ITEM object
 function makeRareItem(rand)
     local i = rand(1,#RARE_ITEMS)
-    return ITEM:new(RARE_ITEMS[i],nil,rand(200,800),1)
+    return ITEM:new(RARE_ITEMS[i],nil,rand(200,800),1,"Rare")
 end
 
-function makeAllRareItems(rand)
-    local inv = {}
-    for i=1,#RARE_ITEMS,1 do
-        inv[RARE_ITEMS[i]] = ITEM:new(RARE_ITEMS[i],nil,rand(200,300),1)
+function playerAddRareItems(inv,rand,min,max)
+    local n = rand(min,max)
+    for i =1,n,1 do
+        local item
+        repeat
+            item = makeRareItem(rand)
+        until(inv[item.name] == nil)
+        inv[item.name] = item
     end
-    return inv
 end
-
 
 --Player can upgrade their ship's weapon
 local function upgradeWeapon(name,print_str)
@@ -47,20 +47,23 @@ local function upgradeWeapon(name,print_str)
     end
     local weapon
     if name == "Weapon I" and PLAYER.attk_level < 1 then
-         weapon = PLAYER.attk / 4
-         PLAYER.attk_level = 1
+        weapon = PLAYER.attk / 4
+        PLAYER.attk_level = 1
+        PLAYER_SCORE = PLAYER_SCORE + 10
     elseif name == "Weapon II"  and PLAYER.attk_level < 2 then
         if PLAYER.attk_level < 2 then
             upgradeWeapon("Weapon I",false)
         end
-         weapon = PLAYER.attk / 3
-         PLAYER.attk_level = 2
+        weapon = PLAYER.attk / 3
+        PLAYER.attk_level = 2
+        PLAYER_SCORE = PLAYER_SCORE + 20
     elseif name == "Weapon III" and PLAYER.attk_level < 3 then
         if PLAYER.attk_level < 2 then
             upgradeWeapon("Weapon II",false)
         end
          weapon = PLAYER.attk / 2
          PLAYER.attk_level = 3
+        PLAYER_SCORE = PLAYER_SCORE + 30
     else
         return string.format("%s wasn't able to upgrade their weapons",PLAYER.name),false
     end
@@ -97,7 +100,7 @@ local function makeUpgradedWeapon(rand)
         name = "Weapon III"
     end
     local price = setWeaponPrice(rand,name)
-    return ITEM:new(name,upgradeWeapon,price,1)
+    return ITEM:new(name,upgradeWeapon,price,1,"Upgrade")
 end
 
 --Player can upgrade their ship's hull
@@ -109,18 +112,21 @@ local function upgradeHull(name,print_str)
     if name == "Hull I"  and PLAYER.hull_level < 1 then
         hull = PLAYER.hull / 4
         PLAYER.hull_level = 1
+        PLAYER_SCORE = PLAYER_SCORE + 10
     elseif name == "Hull II" and PLAYER.hull_level < 2 then
         if PLAYER.hull_level < 1 then
             upgradeHull("Hull I",false)
         end
         hull = PLAYER.hull / 3
         PLAYER.hull_level = 2
+        PLAYER_SCORE = PLAYER_SCORE + 20
     elseif name == "Hull III" and PLAYER.hull_level < 3 then
         if PLAYER.hull_level < 2 then
             upgradeHull("Hull II",false)
         end
         hull = PLAYER.hull / 2
         PLAYER.hull_level = 3
+        PLAYER_SCORE = PLAYER_SCORE + 30
     else
         return string.format("%s wasn't able to upgrade their hull.",PLAYER.name),false
     end
@@ -157,7 +163,7 @@ local function makeUpgradedHull(rand)
         name = "Hull III"
     end
     local price = setHullPrice(rand,name)
-    return ITEM:new(name,upgradeHull,price,1)
+    return ITEM:new(name,upgradeHull,price,1,"Upgrade")
 end
 
 --Player can upgrade thier engine
@@ -169,18 +175,21 @@ local function upgradeEngine(name,print_str)
     if name == "Engine I"  and PLAYER.engine_level < 1 then
         speed = PLAYER.speed / 4
         PLAYER.engine_level = 1
+        PLAYER_SCORE = PLAYER_SCORE + 10
     elseif name == "Engine II" and PLAYER.engine_level < 2 then
         if PLAYER.engine_level < 1 then
             upgradeEngine("Engine I",false)
         end
         speed = PLAYER.speed / 3
         PLAYER.engine_level = 2
+        PLAYER_SCORE = PLAYER_SCORE + 20
     elseif name == "Engine III" and PLAYER.engine_level < 3 then
         if PLAYER.engine_level < 2 then
             upgradeEngine("Engine II",false)
         end
         speed = PLAYER.speed / 2
         PLAYER.engine_level = 3
+        PLAYER_SCORE = PLAYER_SCORE + 30
     else
         return string.format("%s wasn't able to upgrade their engines",PLAYER.name),false
     end
@@ -217,14 +226,14 @@ local function makeUpgradedEngine(rand)
         name = "Engine III"
     end
     local price = setEnginePrice(rand,name)
-    return ITEM:new(name,upgradeEngine,price,1)
+    return ITEM:new(name,upgradeEngine,price,1,"Upgrade")
 end
 
 function makeFuel(rand,min,max)
     local quant = rand(min,max)
     local name  = "Fuel"
     local price = rand(1,15)
-    return ITEM:new(name,getFuel,price,quant)
+    return ITEM:new(name,getFuel,price,quant,"Fuel")
 end
 
 --update the number of and item in inventory
@@ -235,11 +244,11 @@ end
 --Randomly select a new ITEM object to create
 function getRandItem(rand)
    local n = rand(0,16)
-   if n < 5 then
+   if n < 4 then
        return makeUpgradedEngine(rand)
-   elseif n < 10 then
+   elseif n < 8 then
        return makeUpgradedHull(rand)
-   elseif n < 15 then
+   elseif n < 11 then
        return makeUpgradedWeapon(rand)
    else
        return makeRareItem(rand)
@@ -263,22 +272,14 @@ function removeItem(inv,item,quant)
 end
 
 --Make the inventory for an OBJECT
-function makeInv(rand,add,min,max,func)
-    local n         = rand(min,max)
+function makeInv(rand,add,min_items,max_items,func)
+    local n         = rand(min_items,max_items)
     local inv       = {}
     local additem   = addItem
     for i=1,n,1 do
         local item = func(rand)
         additem(inv,item,item.quant)
     end
-       additem(inv,makeFuel(rand,10,400))
     return inv
 end
 
-function makeplayerinv()
-    local inv = {}
-    inv["Weapon III"] = ITEM:new("Weapon III",upgradeWeapon,1,1)
-    inv["Hull III"] = ITEM:new("Hull III",upgradeHull,1,1)
-    inv["Engine III"] = ITEM:new("Engine III",upgradeEngine,1,1)
-    return inv
-end

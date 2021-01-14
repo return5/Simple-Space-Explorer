@@ -45,6 +45,7 @@ function SHIP:new(name,attk,hull,solar_system,rand,add)
     o.hull_level   = 0
     o.attk_level   = 0
     o.engine_level = 0
+    addItem(o.inv,makeFuel(rand,100,1200))
     o.speed        = rand(70,110)
     o.hostile      = rand(0,10) < 6 and false or true
     return o
@@ -61,7 +62,8 @@ function makePlayerShip(solar_system)
     ship.sell_title = ship.name .. "'s inventory:"
     ship.money      = money
     ship.inv        = {}
-    addItem(ship.inv,makeFuel(rand,300,1300))
+    addItem(ship.inv,makeFuel(rand,800,2300))
+    playerAddRareItems(ship.inv,rand,3,7)
     return ship
 end
 

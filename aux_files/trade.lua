@@ -44,10 +44,13 @@ local function sellItem(buyer,seller,name,price)
 end
 
 --player sells item to a planet or ship from the 'buying' column
-local function playerSellItem(buyer,seller,name,check)
+local function playerSellItem(buyer,seller,name)
     if buyer.buy[name] ~= nil and seller.inv[name] ~= nil then
         local price = buyer.buy[name].price
-        return sellItem(buyer,seller,name,price)
+        local sold  = sellItem(buyer,seller,name,price)
+        if sold == true and seller.inv[name].item_type == "Rare" then
+            PLAYER_SCORE = PLAYER_SCORE + 15
+        end
     end
     if seller.inv[name] == nil then
         return string.format("Sorry, but %s doesnt have %s.",seller.name,name)
@@ -93,11 +96,11 @@ end
 function tradeItem(i,verb)
     local str
     if verb == "Player Sell" then
-        str = playerSellItem(TRADE_PARTNER,PLAYER,i,PLAYER.sell_order[i])
+        str = playerSellItem(TRADE_PARTNER,PLAYER,i)
     elseif verb == "Partner Sell" then
         str = sellItem(PLAYER,TRADE_PARTNER,i,TRADE_PARTNER.inv[i].price)
     elseif verb == "Partner Buy" then
-        str = playerSellItem(TRADE_PARTNER,PLAYER,i,TRADE_PARTNER.buy_order[i])
+        str = playerSellItem(TRADE_PARTNER,PLAYER,i)
     end
     return str
 end
@@ -114,7 +117,7 @@ function upgradeShip(i,_)
     return str
 end
 
---find the correct item borresponding to the name displayed on screen based on mouse x,y
+--find the correct item corresponding to the name displayed on screen based on mouse x,y
 function getInvItemFromClick(x,y,func)
     local i,verb = checkXLocationOfClick(x,y)
         if i ~= -1 then
