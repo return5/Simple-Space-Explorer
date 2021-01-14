@@ -6,12 +6,11 @@ local WINDOW_WIDTH  = 800
 local WINDOW_HEIGHT = 800
 local CANVASES      = {planets = nil, ships = nil,border = nil}
 
-
-
 --print remaining time to main screen
 local function printTime()
-    local time = string.format("Remaining time: %.1f",TOTAL_TIME - (love.timer.getTime() - START_TIME))
-    love.graphics.print(time,1,(MAIN_FONT:getHeight() * 3) + 10)
+    TIME_LEFT = TOTAL_TIME - (love.timer.getTime() - START_TIME)
+    local str = string.format("time remaining: %.2f",TIME_LEFT)
+    love.graphics.print(str,1,(MAIN_FONT:getHeight() * 3) + 10)
 end
 
 --print player info on main screen
@@ -148,8 +147,10 @@ function love.keypressed(_,scancode)
         GET_P_NAME = false
         DRAW_SPACE = true
     elseif scancode == "t" then
+        ENGINE_SOUND:stop()
         playerPressedT()
     elseif scancode == "i" then
+        ENGINE_SOUND:stop()
         DRAW_INV = not DRAW_INV
         DRAW_SPACE = not DRAW_SPACE
     elseif scancode == "escape" then
@@ -162,14 +163,25 @@ function love.keypressed(_,scancode)
     end
 end
 
+local function gameOver()
+    GAME_OVER  = true
+    DRAW_INV   = false
+    DRAW_SPACE = false
+    DRAW_TRADE = false
+end
+
 function love.update(dt)
-    if DRAW_SPACE == true then
-        getDirection(dt)
-        if love.keyboard.isScancodeDown('w') then
-            movePlayerShip(dt)
-        else
-            ENGINE_SOUND:stop()
-            MOVE_PLAYER = false
+    if PLAYER.inv["Fuel"].quant <= 0 or TIME_LEFT <= 0 then
+        gameOver()
+    else
+        if DRAW_SPACE == true then
+            getDirection(dt)
+            if love.keyboard.isScancodeDown('w') then
+                movePlayerShip(dt)
+            else
+                ENGINE_SOUND:stop()
+                MOVE_PLAYER = false
+            end
         end
     end
 end
@@ -184,14 +196,16 @@ function love.load()
     love.keyboard.setKeyRepeat(true)
     LARGE_FONT    = love.graphics.newFont(20)
     MAIN_FONT     = love.graphics.newFont()
-    GET_P_NAME    = true
-    PLAYER_NAME   = ""
+    GET_P_NAME    = false
+    PLAYER_NAME   = "return5"
+    GAME_OVER     = false
     MOVE_PLAYER   = false
     DRAW_TRADE    = false    -- should trade screen be drawn
-    DRAW_SPACE    = false     --should open space screen be drawn
+    DRAW_SPACE    = true     --should open space screen be drawn
     DRAW_INV      = false    --should inventory screen be drawn
     DRAW_SELL     = false   --should screen showing sold/bought be displayed
     BOUGHT_STR    = nil
+    LONGEST_LEN   = findLongestName() --length of the longest name in RARE_ITEMS
     SOLAR_SYSTEM  = makeSolarSystem()              --list of all planets
     SHIPS         = makeComputerShips(SOLAR_SYSTEM)   --list of non player controlled ships
     PLAYER        = makePlayerShip(SOLAR_SYSTEM)   --player ship
@@ -200,7 +214,8 @@ function love.load()
     TRADE_PARTNER = PLAYER
     THRUSTER      = love.graphics.newImage("/img/effects/thrust.png")
     PLAYER_SCORE  = 0
-    TOTAL_TIME    = 180
+    TOTAL_TIME    = 360    --total time to play game until game_over
+    TIME_LEFT     = TOTAL_TIME
     START_TIME    = love.timer.getTime()
 end
 

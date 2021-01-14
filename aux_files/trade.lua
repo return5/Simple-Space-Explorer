@@ -10,11 +10,11 @@ end
 
 local function buyFuel(inv,price)
     local quant
-    if inv["Fuel"].quant < 10 then
+    if inv["Fuel"].quant < 25 then
         quant = inv["Fuel"].quant
-        price = price / (10 - quant)
+        price = price / (25 - quant)
     else
-        quant = 10
+        quant = 25
     end
     return string.format("%d Fuel",quant),price,quant
 end
@@ -38,25 +38,25 @@ end
 --player or ship/planet sells an item
 local function sellItem(buyer,seller,name,price)
     if buyer.money >= price then
-        return successSellItem(buyer,seller,name,price)
+        return successSellItem(buyer,seller,name,price),true
     end
-        return string.format("sorry, but %s cannot afford to buy %s",buyer.name,name)
+        return string.format("sorry, but %s cannot afford to buy %s",buyer.name,name),false
 end
 
 --player sells item to a planet or ship from the 'buying' column
 local function playerSellItem(buyer,seller,name)
-    if buyer.buy[name] ~= nil and seller.inv[name] ~= nil then
-        local price = buyer.buy[name].price
-        local sold  = sellItem(buyer,seller,name,price)
-        if sold == true and seller.inv[name].item_type == "Rare" then
-            PLAYER_SCORE = PLAYER_SCORE + 15
-        end
-    end
     if seller.inv[name] == nil then
         return string.format("Sorry, but %s doesnt have %s.",seller.name,name)
-    else
-        return string.format("sorry, but %s isn't buying %s.",buyer.name,name)
     end
+    if buyer.buy[name] ~= nil then
+        local price = buyer.buy[name].price
+        local str,sold  = sellItem(buyer,seller,name,price)
+        if sold == true and buyer.inv[name].item_type == "Rare" then
+            PLAYER_SCORE = PLAYER_SCORE + 15
+        end
+        return str
+    end
+    return string.format("sorry, but %s isn't buying %s.",buyer.name,name)
 end
 
 --check the y position of the mouse compared to what is on the screen
@@ -147,7 +147,7 @@ function playerInventory()
 end
 
 function tradeScreen()
-    local p_width  = PLAYER.sell_canvas:getWidth() + 20
+    local p_width  = PLAYER.sell_canvas:getWidth() + 21
     playerInventory()
     drawInvCanvas(TRADE_PARTNER,p_width,false,true)
 end

@@ -6,11 +6,12 @@ ITEM.__index = ITEM
 --list of names for rare items
 local RARE_ITEMS = {
                     "Mystery Box","E.T. Cartridge Game","Sonichu Medallion","Asperchu Medallion","Spock's Brain",
-                    "Kurlan Naiskos","D.B Cooper's Frozen Head","Apple Newton","Bill Of Rights","Blood's Source Code",
+                    "Kurlan Naiskos","D.B. Cooper's Frozen Head","Apple Newton","Bill Of Rights","Blood's Source Code",
                     "Apolo 11 flag","Luke's Blue LightSaber", "Duke Nukem's blessing","Hand sanitizer","Toilet Paper",
                     "Hypoallergenic Peanuts","Romulan Ale","Purple Space Bazooka","Action Comics #1","Nugget of Kryptonite",
-                    "Space Twinkie","Nukie VHS"
+                    "Space Twinkie","Nukie VHS","Cyborg Bill Doll","Alabam Man Doll"
                 }
+
 
 --Generate new ITEM object
 function ITEM:new(name,func,price,quant,type)
@@ -76,14 +77,14 @@ end
 local function setWeaponPrice(rand,name)
     local min,max
     if name == "Weapon I" then
-        min = 120
-        max = 215
-    elseif name == "Weapon II" then
-        min = 215
+        min = 220
         max = 315
+    elseif name == "Weapon II" then
+        min = 415
+        max = 515
     else
-        min = 315
-        max = 450
+        min = 615
+        max = 750
     end
     return rand(min,max)
 end
@@ -139,14 +140,14 @@ end
 local function setHullPrice(rand,name)
     local min,max
     if name == "Hull I" then
-        min = 150
-        max = 275
+        min = 250
+        max = 375
     elseif name == "Hull II" then
-        min = 275
-        max = 425
-    else
         min = 475
-        max = 650
+        max = 525
+    else
+        min = 675
+        max = 750
     end
     return rand(min,max)
 end
@@ -202,14 +203,14 @@ end
 local function setEnginePrice(rand,name)
     local min,max
     if name == "Engine I" then
-        min = 100
-        max = 250
+        min = 200
+        max = 350
     elseif name == "Engine II" then
-        min = 250
-        max = 375
-    else
         min = 450
-        max = 600
+        max = 575
+    else
+        min = 650
+        max = 750
     end
     return rand(min,max)
 end
@@ -281,5 +282,15 @@ function makeInv(rand,add,min_items,max_items,func)
         additem(inv,item,item.quant)
     end
     return inv
+end
+
+function findLongestName()
+    local longest_name = "1"
+    for i=1,#RARE_ITEMS,1 do
+        if #RARE_ITEMS[i] > #longest_name then
+            longest_name = RARE_ITEMS[i]
+        end
+    end
+    return MAIN_FONT:getWidth(longest_name .. "999  ")
 end
 

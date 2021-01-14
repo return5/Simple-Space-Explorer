@@ -42,8 +42,8 @@ end
 
 --check to see if current x,y matches that of another object
 function checkIfOverlap(object,params)
-    if params.x > (object.x - 175) and params.x < (object.x + 175) then
-        if params.y > (object.y - 175) and params.y < (object.y + 175) then
+    if params.x > (object.x - 210) and params.x < (object.x + 210) then
+        if params.y > (object.y - 210) and params.y < (object.y + 210) then
             return true
         end
     end
@@ -52,6 +52,7 @@ end
 
 
 local function printInventoryItem(inv_item,params)
+    love.graphics.setFont(MAIN_FONT)
     love.graphics.print(inv_item.name,params[1],params[2])
     if params[3] == true then
         love.graphics.print(inv_item.price,params[1] + (MAIN_FONT:getWidth(inv_item.name)) + 10 ,params[2])
@@ -94,18 +95,21 @@ end
 
 --make a new random x,y for an object
 local function makeXY(rand,solar_system,ships)
-    local x,y
-    local check = checkIfOverlap
+    local check   = checkIfOverlap
+    local iterate = iterateObjects
+    local dist    = checkDist
+    local params  = {x = nil, y = nil}
     repeat
-        x = rand(1,WIDTH)
-        y = rand(1,HEIGHT)
-        local params = {x = x, y = y}
-    until(iterateObjects(solar_system,params,check) == -1 and iterateObjects(ships,params,check) == -1 and checkDist(x,y) == true)
-    return x,y
+        params.x = rand(1,WIDTH)
+        params.y = rand(1,HEIGHT)
+    until(iterate(solar_system,params,check) == -1 and iterate(ships,params,check) == -1 and dist(params.x,params.y) == true)
+    return params.x,params.y
 end
 
 local function makeCanvas(title)
-    local canvas = love.graphics.newCanvas(LARGE_FONT:getWidth(title .. "    "),WINDOW_HEIGHT)
+    local len_title = LARGE_FONT:getWidth(title .. "   ")
+    local length    = len_title > LONGEST_LEN and len_title or LONGEST_LEN
+    local canvas    = love.graphics.newCanvas(length,WINDOW_HEIGHT)
     return canvas
 end
 
@@ -163,7 +167,7 @@ function drawInvCanvas(obj,start_x,is_player,show_price)
     end
     love.graphics.setCanvas()
     love.graphics.draw(obj.sell_canvas,start_x,1)
-    love.graphics.draw(obj.buy_canvas,start_x + obj.sell_canvas:getWidth(),1)
+    love.graphics.draw(obj.buy_canvas,start_x + obj.sell_canvas:getWidth() + 20,1)
 end
 
 
