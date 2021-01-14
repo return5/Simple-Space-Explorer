@@ -13,7 +13,7 @@ local SHIPS = {}
 local SHIP_NAMES = {
                 "Beagle","Rescue","Entrepid","Astrid","Hercules","Archon","Flicker","Thrasher","Thrush","Evans","Fong","Nautilus","Nostromo","Pequod",
                 "Conrad","Sulako","Penguin","Patience","Shackleton","Livingston","Binoc","Jove","Wren","Eisley","Galileo","Excalibre","Excelsior","Cardigan",
-                "Parssons","Constitution","Reliant","Junko","Cardinal","Bishop","Prince","Earl","Duke","Mockingbird","Contagion","Regent"
+                "Parssons","Constitution","Reliant","Junko","Cardinal","Bishop","Prince","Earl","Duke","Mockingbird","Contagion","Regent","Hyperion","Exitor"
             }
 
 --get random name for ship
@@ -27,7 +27,7 @@ end
 
 --get a random icon for the ship
 local function makeShipIcon(rand)
-    local i    = rand(1,34)
+    local i    = rand(1,36)
     local name = "/img/ships/ship_icon_" .. i .. ".png"
     return love.graphics.newImage(name)
 end
@@ -59,7 +59,6 @@ function makePlayerShip(solar_system)
     local hull      = rand(70,150)
     local money     = rand(300,800)
     local ship      = SHIP:new(name,attk,hull,solar_system,rand,table.insert)
-    ship.sell_title = ship.name .. "'s inventory:"
     ship.money      = money
     ship.inv        = {}
     addItem(ship.inv,makeFuel(rand,800,2300))

@@ -30,9 +30,10 @@ function makeRareItem(rand)
     return ITEM:new(RARE_ITEMS[i],nil,rand(200,800),1,"Rare")
 end
 
+--adds rare items to player's inventory.
 function playerAddRareItems(inv,rand,min,max)
     local n = rand(min,max)
-    for i =1,n,1 do
+    for i = 1,n,1 do
         local item
         repeat
             item = makeRareItem(rand)
@@ -230,6 +231,7 @@ local function makeUpgradedEngine(rand)
     return ITEM:new(name,upgradeEngine,price,1,"Upgrade")
 end
 
+--make fuel for inventory
 function makeFuel(rand,min,max)
     local quant = rand(min,max)
     local name  = "Fuel"
@@ -256,6 +258,7 @@ function getRandItem(rand)
    end
 end
 
+--add an item to inventory
 function addItem(inv,item,quant)
     if inv[item.name] ~= nil then
         inv[item.name].quant = inv[item.name].quant + quant
@@ -264,6 +267,7 @@ function addItem(inv,item,quant)
     end
 end
 
+--remove item from inventory
 function removeItem(inv,item,quant)
     if inv[item.name].quant <= quant then
         inv[item.name] = nil
@@ -284,6 +288,7 @@ function makeInv(rand,add,min_items,max_items,func)
     return inv
 end
 
+--find the length of the longest rare item name, return the # of pixles
 function findLongestName()
     local longest_name = "1"
     for i=1,#RARE_ITEMS,1 do

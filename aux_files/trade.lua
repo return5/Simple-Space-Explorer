@@ -1,13 +1,13 @@
 --File contains function for trading between player and other ships or planets
 
-
-
+--when player buys/sells item, print this screen
 function sellScreen()
     love.graphics.setCanvas()
     love.graphics.print(BOUGHT_STR,1,1)
     love.graphics.print("press escape to exit.",1,MAIN_FONT:getHeight() * 2 + 10)
 end
 
+--when player buys fuel
 local function buyFuel(inv,price)
     local quant
     if inv["Fuel"].quant < 25 then
@@ -139,13 +139,14 @@ function checkForTradePartner(partners)
     return nil
 end
 
-
+--draw player inventory when player presses i or t
 function playerInventory()
     drawInvCanvas(PLAYER,1,true,false)
     local print_y = LARGE_FONT:getHeight() + 10 + (20 * (#PLAYER.sell_order + 2))
     love.graphics.print("press escape to exit", 5,print_y)
 end
 
+--when player presses t, display player and trade parnter inventories
 function tradeScreen()
     local p_width  = PLAYER.sell_canvas:getWidth() + 21
     playerInventory()

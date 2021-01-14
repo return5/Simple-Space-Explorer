@@ -50,7 +50,7 @@ function checkIfOverlap(object,params)
     return false
 end
 
-
+--print given inv item to the canvas currently set
 local function printInventoryItem(inv_item,params)
     love.graphics.setFont(MAIN_FONT)
     love.graphics.print(inv_item.name,params[1],params[2])
@@ -74,6 +74,7 @@ function iterateObjects(objects,params,func)
     return -1
 end
 
+--iterate over provided inventory. call func with each inv item
 local function iterateInventory(inv,params,func)
     if inv ~= nil then
         for _,v in pairs(inv) do
@@ -106,8 +107,10 @@ local function makeXY(rand,solar_system,ships)
     return params.x,params.y
 end
 
-local function makeCanvas(title)
+--make a new canvas
+function makeCanvas(title)
     local len_title = LARGE_FONT:getWidth(title .. "   ")
+    --get which is longer, the length of title or length of lonest rare item name
     local length    = len_title > LONGEST_LEN and len_title or LONGEST_LEN
     local canvas    = love.graphics.newCanvas(length,WINDOW_HEIGHT)
     return canvas

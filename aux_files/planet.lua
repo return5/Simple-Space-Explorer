@@ -1,10 +1,12 @@
 local Object = require("aux_files.object")
 
+--list of all planets
 local SOLAR_SYSTEM = {}
 PLANET = {}
 PLANET.__index = PLANET
 setmetatable(PLANET,OBJECT)
 
+--names for the planets
 local PLANET_NAMES  = {
                 "Bob","Omicron 8","Tyroid","Perseus 4","Wisseau","Amina","Klandathu","Sigma 7","Decument",
                 "Kelvar","Romulax","Hellena","Ariax","Nilmen","Collosix","Naliux","Sirux","Watermux","Neptunia",
@@ -12,6 +14,7 @@ local PLANET_NAMES  = {
             }
 
 
+--get a random icon for the planet
 local function getPlanetIcon(rand)
     local i    = rand(1,38)
     local name = "/img/planets/planet_icon_" .. i ..".png"
@@ -27,6 +30,7 @@ local function getPlanetName(rand)
     return name
 end
 
+--make new planet object
 function PLANET:new(rand,add)
     local name  = getPlanetName(rand) 
     local icon  = getPlanetIcon(rand)
@@ -35,6 +39,7 @@ function PLANET:new(rand,add)
     return o
 end
 
+--make a list of planets for game
 function makeSolarSystem()
     local rand    = math.random
     local n       = rand(15,#PLANET_NAMES)
