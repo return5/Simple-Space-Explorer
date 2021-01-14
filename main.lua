@@ -271,5 +271,6 @@ function love.load()
     PLAYER_SCORE  = 0
     TOTAL_TIME    = 360    --total time to play game until game_over
     TIME_LEFT     = TOTAL_TIME --time left til game over
+    love.window.setTitle("Simple Space Explorer")
 end
 
