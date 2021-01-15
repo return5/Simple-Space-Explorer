@@ -31,6 +31,7 @@ if item is an upgrade to ship, click the name to apply it to your ship
  - [] Add background music
  - [] Make non-player ships move around
  - [] Make minimap for game
+ - [] Fix up trade screen.
 
 
 ## CREDITS  
