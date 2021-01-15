@@ -37,7 +37,7 @@ if item is an upgrade to ship, click the name to apply it to your ship
 All programming done by me. 
 
 credit for the graphic and sound assets goes to:
-- [kenny](https://kenney.nl/) (if you happen to read this, you rock)
+- [kenney](https://kenney.nl/) (if you happen to read this, you rock)
 - [turkkub](https://www.flaticon.com/packs/universe-28?word=space)
 - [monkik](https://www.flaticon.com/packs/space-85?word=space)
 - [photo3idea_studio](https://www.flaticon.com/packs/space-126?word=space)
