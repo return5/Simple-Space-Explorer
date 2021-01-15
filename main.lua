@@ -1,3 +1,22 @@
+--[[
+        Simple Space explorer. A simple game about exploring space. please see git repo at: https://github.com/return5/Simple-Space-Explorer
+        Licenses under GPL 3.0:
+            Copyright (C) <2021>  <return5>
+
+            This program is free software: you can redistribute it and/or modify
+            it under the terms of the GNU General Public License as published by
+            the Free Software Foundation, either version 3 of the License, or
+            (at your option) any later version.
+
+            This program is distributed in the hope that it will be useful,
+            but WITHOUT ANY WARRANTY; without even the implied warranty of
+            MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+            GNU General Public License for more details.
+
+            You should have received a copy of the GNU General Public License
+            along with this program.  If not, see <https://www.gnu.org/licenses/>.
+--]]
+
 local Planets = require("aux_files.planet")
 local Ships   = require("aux_files.ship")
 local Trade   = require("aux_files.trade")
