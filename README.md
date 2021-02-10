@@ -2,7 +2,7 @@
 Simple Space Explorer is a very simple game of exploring space, discovering new planets, and trading with planets and other ships.  
 Each game starts with a randomly generated number of planets and ships. Each having a randomly selected name,inventory,and location.  
 Player starts game with a random ship with randomly selcted location and inventory.  
-PLayer's objective is to try to get the highest score in the alloted time by discovering new planets and ships,trading rare items,and upgrading their ship.  
+Player's objective is to try to get the highest score in the alloted time by discovering new planets and ships,trading rare items,and upgrading their ship.  
 
 ## controls
 mouse controls direction of ship.  
@@ -27,11 +27,11 @@ if item is an upgrade to ship, click the name to apply it to your ship
 
 
 ## To Do  
- - [] Add combat to game
- - [] Add background music
- - [] Make non-player ships move around
- - [] Make minimap for game
- - [] Fix up trade screen.
+ - [ ] Add combat to game
+ - [ ] Add background music
+ - [ ] Make non-player ships move around
+ - [ ] Make minimap for game
+ - [ ] Fix up trade screen.
 
 
 ## CREDITS  
